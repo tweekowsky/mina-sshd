@@ -62,6 +62,7 @@ import org.apache.sshd.common.Closeable;
 import org.apache.sshd.common.Factory;
 import org.apache.sshd.common.KeyPairProvider;
 import org.apache.sshd.common.NamedFactory;
+import org.apache.sshd.common.SshdSocketAddress;
 import org.apache.sshd.common.future.SshFutureListener;
 import org.apache.sshd.common.io.DefaultIoServiceFactoryFactory;
 import org.apache.sshd.common.io.IoConnectFuture;
@@ -363,6 +364,7 @@ public class SshClient extends AbstractFactoryManager implements ClientFactoryMa
         List<String> command = null;
         int logLevel = 0;
         boolean error = false;
+        int socksPort = -1;
         List<String> identities = new ArrayList<String>();
 
         for (int i = 0; i < args.length; i++) {
@@ -397,6 +399,13 @@ public class SshClient extends AbstractFactoryManager implements ClientFactoryMa
                     break;
                 }
                 identities.add(args[++i]);
+            } else if (command == null && "-D".equals(args[i])) {
+                if (i + 1 >= args.length) {
+                    System.err.println("option requires an argument: " + args[i]);
+                    error = true;
+                    break;
+                }
+                socksPort = Integer.parseInt(args[++i]);
             } else if (command == null && args[i].startsWith("-")) {
                 System.err.println("illegal option: " + args[i]);
                 error = true;
@@ -417,7 +426,7 @@ public class SshClient extends AbstractFactoryManager implements ClientFactoryMa
             error = true;
         }
         if (error) {
-            System.err.println("usage: ssh [-A|-a] [-v[v][v]] [-l login] [-p port] hostname [command]");
+            System.err.println("usage: ssh [-A|-a] [-v[v][v]] [-l login] [-p port] [-D port] hostname [command]");
             System.exit(-1);
         }
         if (logLevel <= 0) {
@@ -508,27 +517,32 @@ public class SshClient extends AbstractFactoryManager implements ClientFactoryMa
         session.auth().verify();
 
         ClientChannel channel;
-        if (command == null) {
-            channel = session.createChannel(ClientChannel.CHANNEL_SHELL);
-            ((ChannelShell) channel).setAgentForwarding(agentForward);
-            channel.setIn(new NoCloseInputStream(System.in));
+        if (socksPort >= 0) {
+            session.createSocksProxy(new SshdSocketAddress("localhost", socksPort));
+            Thread.sleep(Long.MAX_VALUE);
         } else {
-            channel = session.createChannel(ClientChannel.CHANNEL_EXEC);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            Writer w = new OutputStreamWriter(baos);
-            for (String cmd : command) {
-                w.append(cmd).append(" ");
+            if (command == null) {
+                channel = session.createChannel(ClientChannel.CHANNEL_SHELL);
+                ((ChannelShell) channel).setAgentForwarding(agentForward);
+                channel.setIn(new NoCloseInputStream(System.in));
+            } else {
+                channel = session.createChannel(ClientChannel.CHANNEL_EXEC);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                Writer w = new OutputStreamWriter(baos);
+                for (String cmd : command) {
+                    w.append(cmd).append(" ");
+                }
+                w.append("\n");
+                w.close();
+                channel.setIn(new ByteArrayInputStream(baos.toByteArray()));
             }
-            w.append("\n");
-            w.close();
-            channel.setIn(new ByteArrayInputStream(baos.toByteArray()));
+            channel.setOut(new NoCloseOutputStream(System.out));
+            channel.setErr(new NoCloseOutputStream(System.err));
+            channel.open().await();
+            channel.waitFor(ClientChannel.CLOSED, 0);
+            session.close(false);
+            client.stop();
         }
-        channel.setOut(new NoCloseOutputStream(System.out));
-        channel.setErr(new NoCloseOutputStream(System.err));
-        channel.open().await();
-        channel.waitFor(ClientChannel.CLOSED, 0);
-        session.close(false);
-        client.stop();
     }
 
 }

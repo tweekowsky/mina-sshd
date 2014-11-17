@@ -46,6 +46,7 @@ import org.apache.sshd.client.future.AuthFuture;
 import org.apache.sshd.client.future.DefaultAuthFuture;
 import org.apache.sshd.client.scp.DefaultScpClient;
 import org.apache.sshd.client.sftp.DefaultSftpClient;
+import org.apache.sshd.client.socks.SocksProxy;
 import org.apache.sshd.common.NamedFactory;
 import org.apache.sshd.common.Service;
 import org.apache.sshd.common.ServiceFactory;
@@ -258,6 +259,10 @@ public class ClientSessionImpl extends AbstractSession implements ClientSession 
 
     public void stopRemotePortForwarding(SshdSocketAddress remote) throws IOException {
         getConnectionService().getTcpipForwarder().stopRemotePortForwarding(remote);
+    }
+
+    public SocksProxy createSocksProxy(SshdSocketAddress local) throws IOException {
+        return new SocksProxy(getConnectionService(), local);
     }
 
     protected void handleMessage(Buffer buffer) throws Exception {
