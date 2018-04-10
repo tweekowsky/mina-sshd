@@ -39,19 +39,18 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.sshd.common.Factory;
 import org.apache.sshd.common.FactoryManager;
+import org.apache.sshd.common.channel.BufferedIoOutputStream;
 import org.apache.sshd.common.digest.BuiltinDigests;
 import org.apache.sshd.common.digest.DigestFactory;
 import org.apache.sshd.common.file.FileSystemAware;
 import org.apache.sshd.common.io.IoInputStream;
 import org.apache.sshd.common.io.IoOutputStream;
+import org.apache.sshd.common.io.IoWriteFuture;
 import org.apache.sshd.common.random.Random;
 import org.apache.sshd.common.subsystem.sftp.SftpConstants;
 import org.apache.sshd.common.subsystem.sftp.SftpHelper;
@@ -144,6 +143,7 @@ public class SftpSubsystem
     private ChannelSession channelSession;
     private final AtomicBoolean closed = new AtomicBoolean(false);
     private ExecutorService executorService;
+    private TreeLockExecutor treeLockExecutor;
     private boolean shutdownOnExit;
     private final BlockingQueue<Buffer> requests = new LinkedBlockingQueue<>();
 
@@ -168,12 +168,13 @@ public class SftpSubsystem
         super(policy, accessor, errorStatusDataHandler);
 
         if (executorService == null) {
-            this.executorService = ThreadUtils.newSingleThreadExecutor(getClass().getSimpleName());
+            this.executorService = ThreadUtils.newFixedThreadPool(getClass().getSimpleName(), 2);
             this.shutdownOnExit = true;    // we always close the ad-hoc executor service
         } else {
             this.executorService = executorService;
             this.shutdownOnExit = shutdownOnExit;
         }
+        treeLockExecutor = new TreeLockExecutor(this.executorService, this::resolveFile);
     }
 
     @Override
@@ -295,6 +296,10 @@ public class SftpSubsystem
                 b.putRawBytes(buffer.array(), buffer.rpos(), msglen);
                 requests.add(b);
                 buffer.rpos(rpos + msglen + Integer.BYTES);
+                if (buffer.rpos() == buffer.wpos()) {
+                    buffer.clear(false);
+                    break;
+                }
             } else {
                 buffer.rpos(rpos);
                 break;
@@ -344,6 +349,22 @@ public class SftpSubsystem
     public void close() throws IOException {
         requests.clear();
         requests.add(CLOSE);
+    }
+
+    @Override
+    protected void submitPath(String path, Runnable work) {
+        treeLockExecutor.submit(work, path);
+    }
+
+    @Override
+    protected void submitPath(String path1, String path2, Runnable work) {
+        treeLockExecutor.submit(work, path1, path2);
+    }
+
+    @Override
+    protected void submitHandle(String handle, Runnable work) {
+        Handle h = handles.get(handle);
+        treeLockExecutor.submit(work, h != null ? h.getFile().toString() : null);
     }
 
     @Override
@@ -431,7 +452,8 @@ public class SftpSubsystem
                 String name = SftpConstants.getCommandMessageName(type);
                 log.warn("process({})[length={}, type={}, id={}] unknown command",
                          getServerSession(), length, name, id);
-                sendStatus(buffer, id, SftpConstants.SSH_FX_OP_UNSUPPORTED, "Command " + name + " is unsupported or not implemented");
+                writeStatus(buffer, id, SftpConstants.SSH_FX_OP_UNSUPPORTED, "Command " + name + " is unsupported or not implemented");
+                send(buffer, id);
             }
         }
 
@@ -476,7 +498,8 @@ public class SftpSubsystem
                 if (log.isDebugEnabled()) {
                     log.debug("executeExtendedCommand({}) received unsupported SSH_FXP_EXTENDED({})", getServerSession(), extension);
                 }
-                sendStatus(buffer, id, SftpConstants.SSH_FX_OP_UNSUPPORTED, "Command SSH_FXP_EXTENDED(" + extension + ") is unsupported or not implemented");
+                writeStatus(buffer, id, SftpConstants.SSH_FX_OP_UNSUPPORTED, "Command SSH_FXP_EXTENDED(" + extension + ") is unsupported or not implemented");
+                send(buffer, id);
                 break;
         }
     }
@@ -650,9 +673,10 @@ public class SftpSubsystem
          * channel.
          */
         if (requestsCount > 0L) {
-            sendStatus(buffer, id,
+            writeStatus(buffer, id,
                        SftpConstants.SSH_FX_FAILURE,
                        "Version selection not the 1st request for proposal = " + proposed);
+            send(buffer, id);
             session.close(true);
             return;
         }
@@ -667,9 +691,11 @@ public class SftpSubsystem
         }
         if (result) {
             version = Integer.parseInt(proposed);
-            sendStatus(buffer, id, SftpConstants.SSH_FX_OK, "");
+            writeStatus(buffer, id, SftpConstants.SSH_FX_OK, "");
+            send(buffer, id);
         } else {
-            sendStatus(buffer, id, SftpConstants.SSH_FX_FAILURE, "Unsupported version " + proposed);
+            writeStatus(buffer, id, SftpConstants.SSH_FX_FAILURE, "Unsupported version " + proposed);
+            send(buffer, id);
             session.close(true);
         }
     }
@@ -793,72 +819,72 @@ public class SftpSubsystem
     @Override
     protected void doReadDir(Buffer buffer, int id) throws IOException {
         String handle = buffer.getString();
-        Handle h = handles.get(handle);
-        boolean debugEnabled = log.isDebugEnabled();
-        if (debugEnabled) {
-            log.debug("doReadDir({})[id={}] SSH_FXP_READDIR (handle={}[{}])",
-                      getServerSession(), id, handle, h);
-        }
-
-        try {
-            DirectoryHandle dh = validateHandle(handle, h, DirectoryHandle.class);
-            if (dh.isDone()) {
-                sendStatus(buffer, id, SftpConstants.SSH_FX_EOF, "Directory reading is done");
-                return;
+        submitHandle(handle, buffer, id, () -> {
+            Handle h = handles.get(handle);
+            boolean debugEnabled = log.isDebugEnabled();
+            if (debugEnabled) {
+                log.debug("doReadDir({})[id={}] SSH_FXP_READDIR (handle={}[{}])",
+                        getServerSession(), id, handle, h);
             }
 
-            Path file = dh.getFile();
-            LinkOption[] options =
-                getPathResolutionLinkOption(SftpConstants.SSH_FXP_READDIR, "", file);
-            Boolean status = IoUtils.checkFileExists(file, options);
-            if (status == null) {
-                throw new AccessDeniedException(file.toString(), file.toString(), "Cannot determine existence of read-dir");
-            }
+            try {
+                DirectoryHandle dh = validateHandle(handle, h, DirectoryHandle.class);
+                if (dh.isDone()) {
+                    writeStatus(buffer, id, SftpConstants.SSH_FX_EOF, "Directory reading is done");
+                    return;
+                }
 
-            if (!status) {
-                throw new NoSuchFileException(file.toString(), file.toString(), "Non-existent directory");
-            } else if (!Files.isDirectory(file, options)) {
-                throw new NotDirectoryException(file.toString());
-            } else if (!Files.isReadable(file)) {
-                throw new AccessDeniedException(file.toString(), file.toString(), "Not readable");
-            }
+                Path file = dh.getFile();
+                LinkOption[] options =
+                        getPathResolutionLinkOption(SftpConstants.SSH_FXP_READDIR, "", file);
+                Boolean status = IoUtils.checkFileExists(file, options);
+                if (status == null) {
+                    throw new AccessDeniedException(file.toString(), file.toString(), "Cannot determine existence of read-dir");
+                }
 
-            if (dh.isSendDot() || dh.isSendDotDot() || dh.hasNext()) {
-                // There is at least one file in the directory or we need to send the "..".
-                // Send only a few files at a time to not create packets of a too
-                // large size or have a timeout to occur.
+                if (!status) {
+                    throw new NoSuchFileException(file.toString(), file.toString(), "Non-existent directory");
+                } else if (!Files.isDirectory(file, options)) {
+                    throw new NotDirectoryException(file.toString());
+                } else if (!Files.isReadable(file)) {
+                    throw new AccessDeniedException(file.toString(), file.toString(), "Not readable");
+                }
 
-                buffer.clear();
-                buffer.putInt(0);
-                buffer.putByte((byte) SftpConstants.SSH_FXP_NAME);
-                buffer.putInt(id);
+                if (dh.isSendDot() || dh.isSendDotDot() || dh.hasNext()) {
+                    // There is at least one file in the directory or we need to send the "..".
+                    // Send only a few files at a time to not create packets of a too
+                    // large size or have a timeout to occur.
 
-                int lenPos = buffer.wpos();
-                buffer.putInt(0);
+                    buffer.clear();
+                    buffer.putInt(0);
+                    buffer.putByte((byte) SftpConstants.SSH_FXP_NAME);
+                    buffer.putInt(id);
 
-                ServerSession session = getServerSession();
-                int maxDataSize = session.getIntProperty(MAX_READDIR_DATA_SIZE_PROP, DEFAULT_MAX_READDIR_DATA_SIZE);
-                int count = doReadDir(id, handle, dh, buffer, maxDataSize, IoUtils.getLinkOptions(false));
-                BufferUtils.updateLengthPlaceholder(buffer, lenPos, count);
-                if ((!dh.isSendDot()) && (!dh.isSendDotDot()) && (!dh.hasNext())) {
+                    int lenPos = buffer.wpos();
+                    buffer.putInt(0);
+
+                    ServerSession session = getServerSession();
+                    int maxDataSize = session.getIntProperty(MAX_READDIR_DATA_SIZE_PROP, DEFAULT_MAX_READDIR_DATA_SIZE);
+                    int count = doReadDir(id, handle, dh, buffer, maxDataSize, IoUtils.getLinkOptions(false));
+                    BufferUtils.updateLengthPlaceholder(buffer, lenPos, count);
+                    if ((!dh.isSendDot()) && (!dh.isSendDotDot()) && (!dh.hasNext())) {
+                        dh.markDone();
+                    }
+
+                    Boolean indicator =
+                            SftpHelper.indicateEndOfNamesList(buffer, getVersion(), session, dh.isDone());
+                    if (debugEnabled) {
+                        log.debug("doReadDir({})({})[{}] - seding {} entries - eol={}", session, handle, h, count, indicator);
+                    }
+                } else {
+                    // empty directory
                     dh.markDone();
+                    writeStatus(buffer, id, SftpConstants.SSH_FX_EOF, "Empty directory");
                 }
-
-                Boolean indicator =
-                    SftpHelper.indicateEndOfNamesList(buffer, getVersion(), session, dh.isDone());
-                if (debugEnabled) {
-                    log.debug("doReadDir({})({})[{}] - seding {} entries - eol={}", session, handle, h, count, indicator);
-                }
-
-                send(buffer);
-            } else {
-                // empty directory
-                dh.markDone();
-                sendStatus(buffer, id, SftpConstants.SSH_FX_EOF, "Empty directory");
+            } catch (IOException | RuntimeException e) {
+                writeStatus(buffer, id, e, SftpConstants.SSH_FXP_READDIR, handle);
             }
-        } catch (IOException | RuntimeException e) {
-            sendStatus(buffer, id, e, SftpConstants.SSH_FXP_READDIR, handle);
-        }
+        });
     }
 
     @Override
@@ -1043,13 +1069,34 @@ public class SftpSubsystem
         SftpEventListener listener = getSftpEventListenerProxy();
         listener.initialized(getServerSession(), version);
 
-        send(buffer);
+        send(buffer, id);
+    }
+
+    private final BlockingQueue<Callable<?>> writes = new LinkedBlockingQueue<>();
+    {
+        new Thread(() -> {
+            try {
+                while (true) {
+                    Callable<?> work = writes.take();
+                    work.call();
+                }
+            } catch (Throwable t) {
+                getServerSession().exceptionCaught(t);
+            }
+        }).start();
+
     }
 
     @Override
-    protected void send(Buffer buffer) throws IOException {
-        BufferUtils.updateLengthPlaceholder(buffer, 0);
-        out.writePacket(buffer);
+    protected void send(Buffer buffer, int id) throws IOException {
+        writes.add(() -> {
+            BufferUtils.updateLengthPlaceholder(buffer, 0);
+            IoWriteFuture future = out.writePacket(buffer);
+            if (log.isTraceEnabled()) {
+                future.addListener(f -> log.trace("Response " + id + " written"));
+            }
+            return null;
+        });
     }
 
     @Override
@@ -1086,9 +1133,11 @@ public class SftpSubsystem
 
         pendingFuture = null;
 
-        ExecutorService executors = getExecutorService();
-        if ((executors != null) && (!executors.isShutdown()) && isShutdownOnExit()) {
-            Collection<Runnable> runners = executors.shutdownNow();
+        treeLockExecutor.close();
+
+        ExecutorService executor = getExecutorService();
+        if ((executor != null) && (!executor.isShutdown()) && isShutdownOnExit()) {
+            Collection<Runnable> runners = executor.shutdownNow();
             if (debugEnabled) {
                 log.debug("destroy(" + session + ") - shutdown executor service - runners count=" + runners.size());
             }
@@ -1109,4 +1158,5 @@ public class SftpSubsystem
             }
         }
     }
+
 }

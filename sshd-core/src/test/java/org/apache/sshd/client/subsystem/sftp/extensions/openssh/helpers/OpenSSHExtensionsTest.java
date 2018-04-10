@@ -155,7 +155,7 @@ public class OpenSSHExtensionsTest extends AbstractSftpClientTestSupport {
                             buffer.putByte((byte) SftpConstants.SSH_FXP_EXTENDED_REPLY);
                             buffer.putInt(id);
                             OpenSSHStatExtensionInfo.encode(buffer, expected);
-                            send(buffer);
+                            send(buffer, id);
                         } else {
                             super.executeExtendedCommand(buffer, id, extension);
                         }
