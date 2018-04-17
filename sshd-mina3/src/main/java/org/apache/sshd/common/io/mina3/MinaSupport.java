@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sshd.common.io.mina;
+package org.apache.sshd.common.io.mina3;
 
-import org.apache.mina.core.buffer.IoBuffer;
+import org.apache.mina.codec.IoBuffer;
 import org.apache.sshd.common.util.Readable;
 import org.apache.sshd.common.util.buffer.Buffer;
 

@@ -28,8 +28,8 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>sshd-core</artifactId>
-    <name>Apache Mina SSHD :: Core</name>
+    <artifactId>sshd-mina3</artifactId>
+    <name>Apache Mina SSHD :: Mina 3</name>
     <packaging>jar</packaging>
     <inceptionYear>2008</inceptionYear>
 
@@ -39,38 +39,27 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>org.apache.sshd</groupId>
+            <artifactId>sshd-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>tomcat</groupId>
-            <artifactId>tomcat-apr</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpg-jdk15on</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-            <!-- For ed25519 support -->
-        <dependency>
-            <groupId>net.i2p.crypto</groupId>
-            <artifactId>eddsa</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-            <!-- test dependencies -->
         <dependency>
             <groupId>org.apache.mina</groupId>
             <artifactId>mina-core</artifactId>
-            <version>${mina2.version}</version>
+            <version>${mina3.version}</version>
+        </dependency>
+
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>org.apache.sshd</groupId>
+            <artifactId>sshd-core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.i2p.crypto</groupId>
+            <artifactId>eddsa</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -126,27 +115,50 @@
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/filtered-resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
+        <testSourceDirectory>${build.directory}/test-sources</testSourceDirectory>
+        <testResources>
+            <testResource>
+                <directory>${build.directory}/test-resources</directory>
+            </testResource>
+        </testResources>
         <plugins>
-            <!-- publish the test-jar since it contains some classes used by other
-                artifacts tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>copy-test-resources</id>
+                        <phase>generate-test-resources</phase>
                         <goals>
-                            <goal>test-jar</goal>
+                            <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <includes>
-                                <include>org/apache/sshd/util/test/**/*</include>
-                            </includes>
+                            <outputDirectory>${build.directory}/test-resources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${projectRoot}/sshd-core/src/test/resources</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-test-sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${build.directory}/test-sources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${projectRoot}/sshd-core/src/test/java</directory>
+                                    <excludes>
+                                        <exclude>**/ProxyTest.java</exclude>
+                                        <exclude>**/PortForwardingLoadTest.java</exclude>
+                                        <exclude>**/PortForwardingTest.java</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>
@@ -156,13 +168,26 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <reportsDirectory>${project.build.directory}/surefire-reports-nio2</reportsDirectory>
+                    <reportsDirectory>${project.build.directory}/surefire-reports-mina</reportsDirectory>
                     <systemProperties>
-                        <org.apache.sshd.common.io.IoServiceFactoryFactory>org.apache.sshd.common.io.nio2.Nio2ServiceFactoryFactory</org.apache.sshd.common.io.IoServiceFactoryFactory>
+                        <org.apache.sshd.common.io.IoServiceFactory>org.apache.sshd.common.io.mina3.MinaServiceFactory</org.apache.sshd.common.io.IoServiceFactory>
                     </systemProperties>
                     <excludes>
+                            <!-- These tests use NIO explicitly -->
                         <exclude>**/*LoadTest.java</exclude>
+                        <exclude>**/ProxyTest.java</exclude>
+                        <exclude>**/Nio2ServiceTest.java</exclude>
+                            <!-- TODO need some more research as to why this fails on MINA but not on NIO2 -->
+                        <exclude>**/ApacheServer*Test.java</exclude>
+                        <exclude>**/CipherTest.java</exclude>
+                        <exclude>**/CompressionTest.java</exclude>
+                        <exclude>**/NoServerNoClientTest.java</exclude>
+                        <exclude>**/PortForwardingTest.java</exclude>
+                        <exclude>**/MacTest.java</exclude>
+                        <exclude>**/SpringConfigTest.java</exclude>
                     </excludes>
+                        <!-- No need to re-run core tests that do not involve session creation -->
+                    <excludedGroups>org.apache.sshd.util.test.NoIoTestCase</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>
@@ -174,53 +199,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>test-jce</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>jce</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <configuration>
-                                    <reportsDirectory>${project.build.directory}/surefire-reports-jce</reportsDirectory>
-                                    <systemProperties>
-                                        <org.apache.sshd.security.provider.BC.enabled>false</org.apache.sshd.security.provider.BC.enabled>
-                                            <!-- deprecated -->
-                                        <org.apache.sshd.registerBouncyCastle>false</org.apache.sshd.registerBouncyCastle>
-                                    </systemProperties>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>load-test</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                                <exclude>foo</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

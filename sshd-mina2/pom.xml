@@ -28,8 +28,8 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>sshd-mina</artifactId>
-    <name>Apache Mina SSHD :: Mina</name>
+    <artifactId>sshd-mina2</artifactId>
+    <name>Apache Mina SSHD :: Mina 2</name>
     <packaging>jar</packaging>
     <inceptionYear>2008</inceptionYear>
 
@@ -46,6 +46,7 @@
         <dependency>
             <groupId>org.apache.mina</groupId>
             <artifactId>mina-core</artifactId>
+            <version>${mina2.version}</version>
         </dependency>
 
         <!-- test dependencies -->
@@ -164,7 +165,7 @@
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     <reportsDirectory>${project.build.directory}/surefire-reports-mina</reportsDirectory>
                     <systemProperties>
-                        <org.apache.sshd.common.io.IoServiceFactoryFactory>org.apache.sshd.common.io.mina.MinaServiceFactoryFactory</org.apache.sshd.common.io.IoServiceFactoryFactory>
+                        <org.apache.sshd.common.io.IoServiceFactoryFactory>org.apache.sshd.common.io.mina2.MinaServiceFactoryFactory</org.apache.sshd.common.io.IoServiceFactoryFactory>
                     </systemProperties>
                     <excludes>
                             <!-- These tests use NIO explicitly -->

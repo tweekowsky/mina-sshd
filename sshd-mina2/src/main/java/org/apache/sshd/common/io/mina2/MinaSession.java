@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sshd.common.io.mina;
+package org.apache.sshd.common.io.mina2;
 
 import java.net.SocketAddress;
 import java.util.Objects;

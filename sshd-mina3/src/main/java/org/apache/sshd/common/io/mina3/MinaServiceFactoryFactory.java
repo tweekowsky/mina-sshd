@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sshd.common.io.mina;
+package org.apache.sshd.common.io.mina3;
 
 import java.util.concurrent.ExecutorService;
 
