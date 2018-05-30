@@ -65,16 +65,6 @@ public class DefaultConnectFuture extends DefaultVerifiableSshFuture<ConnectFutu
     }
 
     @Override
-    public Throwable getException() {
-        Object v = getValue();
-        if (v instanceof Throwable) {
-            return (Throwable) v;
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public boolean isConnected() {
         return getValue() instanceof ClientSession;
     }

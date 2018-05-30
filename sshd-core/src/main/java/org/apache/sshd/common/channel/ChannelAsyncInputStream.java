@@ -192,14 +192,5 @@ public class ChannelAsyncInputStream extends AbstractCloseable implements IoInpu
             }
         }
 
-        @Override
-        public Throwable getException() {
-            Object v = getValue();
-            if (v instanceof Throwable) {
-                return (Throwable) v;
-            } else {
-                return null;
-            }
-        }
     }
 }

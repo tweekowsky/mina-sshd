@@ -41,13 +41,4 @@ public class DefaultKeyExchangeFuture extends DefaultVerifiableSshFuture<KeyExch
         return this;
     }
 
-    @Override
-    public Throwable getException() {
-        Object v = getValue();
-        if (v instanceof Throwable) {
-            return (Throwable) v;
-        } else {
-            return null;
-        }
-    }
 }

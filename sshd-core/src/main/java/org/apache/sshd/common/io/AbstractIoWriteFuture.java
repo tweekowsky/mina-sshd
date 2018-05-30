@@ -48,13 +48,4 @@ public abstract class AbstractIoWriteFuture extends DefaultVerifiableSshFuture<I
         return (value instanceof Boolean) && (Boolean) value;
     }
 
-    @Override
-    public Throwable getException() {
-        Object v = getValue();
-        if (v instanceof Throwable) {
-            return (Throwable) v;
-        } else {
-            return null;
-        }
-    }
 }

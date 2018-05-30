@@ -45,16 +45,6 @@ public class DefaultOpenFuture extends DefaultVerifiableSshFuture<OpenFuture> im
     }
 
     @Override
-    public Throwable getException() {
-        Object v = getValue();
-        if (v instanceof Throwable) {
-            return (Throwable) v;
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public boolean isOpened() {
         Object value = getValue();
         return (value instanceof Boolean) && (Boolean) value;

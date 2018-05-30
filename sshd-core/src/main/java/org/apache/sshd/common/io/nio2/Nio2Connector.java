@@ -174,12 +174,6 @@ public class Nio2Connector extends Nio2Service implements IoConnector {
         }
 
         @Override
-        public Throwable getException() {
-            Object v = getValue();
-            return v instanceof Throwable ? (Throwable) v : null;
-        }
-
-        @Override
         public boolean isConnected() {
             return getValue() instanceof IoSession;
         }

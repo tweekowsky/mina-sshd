@@ -141,6 +141,11 @@ public class DefaultSshFuture<T extends SshFuture> extends AbstractSshFuture<T> 
         }
     }
 
+    public Throwable getException() {
+        Object v = getValue();
+        return (v instanceof Throwable) ? (Throwable) v : null;
+    }
+
     @Override
     public T addListener(SshFutureListener<T> listener) {
         Objects.requireNonNull(listener, "Missing listener argument");

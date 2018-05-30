@@ -46,16 +46,6 @@ public class DefaultAuthFuture extends DefaultVerifiableSshFuture<AuthFuture> im
     }
 
     @Override
-    public Throwable getException() {
-        Object v = getValue();
-        if (v instanceof Throwable) {
-            return (Throwable) v;
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public boolean isSuccess() {
         Object v = getValue();
         return (v instanceof Boolean) && (Boolean) v;
