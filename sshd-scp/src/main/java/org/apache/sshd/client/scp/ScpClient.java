@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.scp.ScpHelper;
 import org.apache.sshd.common.scp.ScpTimestamp;
 import org.apache.sshd.common.session.SessionHolder;

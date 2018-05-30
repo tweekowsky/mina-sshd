@@ -573,7 +573,6 @@ public interface SftpClient extends SubsystemClient {
      */
     int getVersion();
 
-    @Override
     default String getName() {
         return SftpConstants.SFTP_SUBSYSTEM_NAME;
     }

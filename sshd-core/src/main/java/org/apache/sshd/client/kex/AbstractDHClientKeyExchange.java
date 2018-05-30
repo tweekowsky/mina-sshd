@@ -24,13 +24,12 @@ import java.security.PublicKey;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.kex.dh.AbstractDHKeyExchange;
 import org.apache.sshd.common.session.Session;
-import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.ValidateUtils;
 
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public abstract class AbstractDHClientKeyExchange extends AbstractDHKeyExchange<ClientSession> implements SessionHolder<ClientSession> {
+public abstract class AbstractDHClientKeyExchange extends AbstractDHKeyExchange<ClientSession> {
     protected PublicKey serverKey;
 
     protected AbstractDHClientKeyExchange() {

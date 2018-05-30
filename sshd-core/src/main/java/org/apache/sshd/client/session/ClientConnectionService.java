@@ -30,7 +30,6 @@ import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;
 import org.apache.sshd.common.io.AbstractIoWriteFuture;
 import org.apache.sshd.common.io.IoWriteFuture;
-import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.session.helpers.AbstractConnectionService;
 import org.apache.sshd.common.util.buffer.Buffer;
 import org.apache.sshd.server.x11.X11ForwardSupport;
@@ -40,7 +39,7 @@ import org.apache.sshd.server.x11.X11ForwardSupport;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class ClientConnectionService extends AbstractConnectionService<AbstractClientSession> implements SessionHolder<ClientSession> {
+public class ClientConnectionService extends AbstractConnectionService<AbstractClientSession> {
 
     private ScheduledFuture<?> heartBeat;
 

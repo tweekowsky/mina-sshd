@@ -23,14 +23,13 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.common.session.SessionHolder;
 
 /**
  * @param <I> Type of {@link PublicKeyIdentity} being iterated
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
 public abstract class AbstractKeyPairIterator<I extends PublicKeyIdentity>
-        implements Iterator<I>, SessionHolder<ClientSession> {
+        implements Iterator<I> {
 
     private final ClientSession session;
 
@@ -38,7 +37,6 @@ public abstract class AbstractKeyPairIterator<I extends PublicKeyIdentity>
         this.session = Objects.requireNonNull(session, "No session");
     }
 
-    @Override
     public final ClientSession getSession() {
         return session;
     }

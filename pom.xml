@@ -126,6 +126,8 @@
             <properties>
                 <skipTests>true</skipTests>
                 <maven.javadoc.skip>true</maven.javadoc.skip>
+                <checkstyle.skip>true</checkstyle.skip>
+                <pmd.skip>true</pmd.skip>
             </properties>
         </profile>
         <profile>

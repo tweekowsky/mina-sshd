@@ -19,15 +19,30 @@
 package org.apache.sshd.client.auth;
 
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.common.auth.UserAuthInstance;
-import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.buffer.Buffer;
 
 /**
  * Represents a user authentication mechanism
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface UserAuth extends SessionHolder<ClientSession>, UserAuthInstance<ClientSession> {
+public interface UserAuth {
+
+    /**
+     * @return the authorization method used by the instance
+     */
+    String getName();
+
+    /**
+     * @return the service used by the instance
+     */
+    String getService();
+
+    /**
+     * @return The current session for which the authentication is being
+     * tracked. <B>Note:</B> may be {@code null} if the instance has not
+     * been initialized yet
+     */
+    ClientSession getSession();
 
     /**
      * @param session The {@link ClientSession}

@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.sshd.common.Closeable;
 import org.apache.sshd.common.FactoryManager;
-import org.apache.sshd.common.FactoryManagerHolder;
 import org.apache.sshd.common.PropertyResolver;
 import org.apache.sshd.common.io.IoHandler;
 import org.apache.sshd.common.io.IoService;
@@ -46,7 +45,7 @@ import org.apache.sshd.common.util.closeable.AbstractInnerCloseable;
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public abstract class Nio2Service extends AbstractInnerCloseable implements IoService, FactoryManagerHolder {
+public abstract class Nio2Service extends AbstractInnerCloseable implements IoService {
     // Note: order may be important so that's why we use a LinkedHashMap
     public static final Map<String, SimpleImmutableEntry<SocketOption<?>, Object>> CONFIGURABLE_OPTIONS;
 
@@ -81,7 +80,6 @@ public abstract class Nio2Service extends AbstractInnerCloseable implements IoSe
         return group;
     }
 
-    @Override
     public FactoryManager getFactoryManager() {
         return manager;
     }

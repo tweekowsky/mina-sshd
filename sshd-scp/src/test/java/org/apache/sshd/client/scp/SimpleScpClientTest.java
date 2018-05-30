@@ -65,7 +65,7 @@ public class SimpleScpClientTest extends BaseSimpleClientTestSupport {
         try (ScpClient scp = login()) {
             assertTrue("SCP not open", scp.isOpen());
 
-            Session session = scp.getClientSession();
+            Session session = scp.getSession();
             assertTrue("Session not open", session.isOpen());
 
             scp.close();

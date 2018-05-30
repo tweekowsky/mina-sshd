@@ -22,7 +22,6 @@ package org.apache.sshd.common.scp;
 import java.io.Serializable;
 import java.util.Objects;
 
-import org.apache.sshd.common.auth.MutableUserHolder;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.OsUtils;
 import org.apache.sshd.common.util.ValidateUtils;
@@ -33,7 +32,7 @@ import org.apache.sshd.common.util.ValidateUtils;
  * remote path then current user is used.
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class ScpLocation implements MutableUserHolder, Serializable, Cloneable {
+public class ScpLocation implements Serializable, Cloneable {
     public static final char HOST_PART_SEPARATOR = ':';
     public static final char USERNAME_PART_SEPARATOR = '@';
 
@@ -68,12 +67,10 @@ public class ScpLocation implements MutableUserHolder, Serializable, Cloneable {
         return GenericUtils.isEmpty(getHost());
     }
 
-    @Override
     public String getUsername() {
         return username;
     }
 
-    @Override
     public void setUsername(String username) {
         this.username = username;
     }

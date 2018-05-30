@@ -18,8 +18,6 @@
  */
 package org.apache.sshd.server.auth;
 
-import org.apache.sshd.common.auth.UserAuthInstance;
-import org.apache.sshd.common.auth.UsernameHolder;
 import org.apache.sshd.common.util.buffer.Buffer;
 import org.apache.sshd.server.session.ServerSession;
 
@@ -28,7 +26,30 @@ import org.apache.sshd.server.session.ServerSession;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface UserAuth extends UserAuthInstance<ServerSession>, UsernameHolder {
+public interface UserAuth {
+
+    /**
+     * @return the authorization method used by the instance
+     */
+    String getName();
+
+    /**
+     * @return the service used by the instance
+     */
+    String getService();
+
+    /**
+     * @return The attached username - may be {@code null}/empty if holder
+     * not yet initialized
+     */
+    String getUsername();
+
+    /**
+     * @return The current session for which the authentication is being
+     * tracked. <B>Note:</B> may be {@code null} if the instance has not
+     * been initialized yet
+     */
+    ServerSession getSession();
 
     /**
      * Try to authenticate the user. This methods should return a non {@code null}

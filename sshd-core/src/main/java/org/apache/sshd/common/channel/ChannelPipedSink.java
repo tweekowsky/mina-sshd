@@ -19,12 +19,13 @@
 
 package org.apache.sshd.common.channel;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface ChannelPipedSink extends java.nio.channels.Channel {
+public interface ChannelPipedSink extends Closeable {
     /**
      * @param bytes Bytes to be sent to the sink
      * @param off   Offset in buffer

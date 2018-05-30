@@ -18,6 +18,7 @@
  */
 package org.apache.sshd.server.subsystem.sftp;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -29,7 +30,7 @@ import org.apache.sshd.server.session.ServerSession;
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public abstract class Handle implements java.nio.channels.Channel {
+public abstract class Handle implements Closeable {
     private final AtomicBoolean closed = new AtomicBoolean(false);
     private final Path file;
     private final String handle;
@@ -59,7 +60,6 @@ public abstract class Handle implements java.nio.channels.Channel {
         return handle;
     }
 
-    @Override
     public boolean isOpen() {
         return !closed.get();
     }

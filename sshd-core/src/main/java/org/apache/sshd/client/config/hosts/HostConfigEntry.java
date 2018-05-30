@@ -47,7 +47,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.sshd.common.auth.MutableUserHolder;
 import org.apache.sshd.common.config.SshConfigFileReader;
 import org.apache.sshd.common.config.keys.IdentityUtils;
 import org.apache.sshd.common.config.keys.PublicKeyEntry;
@@ -65,7 +64,7 @@ import org.apache.sshd.common.util.io.NoCloseReader;
  * file format</A>
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class HostConfigEntry extends HostPatternsHolder implements MutableUserHolder {
+public class HostConfigEntry extends HostPatternsHolder {
     /**
      * Standard OpenSSH config file name
      */
@@ -185,12 +184,10 @@ public class HostConfigEntry extends HostPatternsHolder implements MutableUserHo
     /**
      * @return A username override - if not {@code null}/empty
      */
-    @Override
     public String getUsername() {
         return username;
     }
 
-    @Override
     public void setUsername(String username) {
         this.username = username;
     }

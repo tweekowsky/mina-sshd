@@ -41,9 +41,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.client.subsystem.sftp.impl.AbstractSftpClient;
 import org.apache.sshd.common.file.util.BaseFileSystem;
+import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.subsystem.sftp.SftpConstants;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.buffer.Buffer;
@@ -234,8 +234,8 @@ public class SftpFileSystem extends BaseFileSystem<SftpPath> implements SessionH
         }
 
         @Override
-        public ClientChannel getClientChannel() {
-            return delegate.getClientChannel();
+        public ClientChannel getChannel() {
+            return delegate.getChannel();
         }
 
         @Override

@@ -208,7 +208,7 @@ public class ApacheSshdSftpSessionFactory
 
     /**
      * @param sessionConfig Extra {@link Properties} that can be used to set specific
-     * SSHD session properties
+     * SSHD sharedSessionHolder properties
      */
     public void setSessionConfig(Properties sessionConfig) {
         this.sessionConfig = sessionConfig;
@@ -264,12 +264,12 @@ public class ApacheSshdSftpSessionFactory
             sharedSession = sharedSessionHolder.getAndSet(null);
         }
         if (sharedSession != null) {
-            log.info("resetSharedSession - session={}", sharedSession);
+            log.info("resetSharedSession - sharedSessionHolder={}", sharedSession);
             sharedSession.close(false).addListener(new SshFutureListener<CloseFuture>() {
                 @SuppressWarnings("synthetic-access")
                 @Override
                 public void operationComplete(CloseFuture future) {
-                    log.info("resetSharedSession - session closed: {}", sharedSession);
+                    log.info("resetSharedSession - sharedSessionHolder closed: {}", sharedSession);
                 }
             });
         }
@@ -380,12 +380,12 @@ public class ApacheSshdSftpSessionFactory
     protected ClientSession resolveClientSession(boolean sharedInstance) throws Exception {
         ClientSession session;
         if (sharedInstance) {
-            synchronized (sharedSessionHolder) {
-                session = sharedSessionHolder.get();
+            synchronized (this.sharedSessionHolder) {
+                session = this.sharedSessionHolder.get();
                 if (session == null) {
                     session = createClientSession();
                 }
-                sharedSessionHolder.set(session);
+                this.sharedSessionHolder.set(session);
             }
         } else {
             session = createClientSession();
@@ -408,7 +408,7 @@ public class ApacheSshdSftpSessionFactory
 
             ClientSession newSession = session;
             if (log.isDebugEnabled()) {
-                log.debug("createClientSession - session={}", session);
+                log.debug("createClientSession - sharedSessionHolder={}", session);
             }
             session = null; // avoid auto-close at finally clause
             return newSession;

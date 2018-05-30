@@ -66,7 +66,7 @@ import org.apache.sshd.server.auth.WelcomeBannerPhase;
  */
 public class ServerUserAuthService extends AbstractCloseable implements Service, SessionHolder<ServerSession> {
 
-    private final ServerSession serverSession;
+    private final AbstractServerSession serverSession;
     private final AtomicBoolean welcomeSent = new AtomicBoolean(false);
     private final WelcomeBannerPhase welcomePhase;
     private List<NamedFactory<UserAuth>> userAuthFactories;
@@ -81,7 +81,7 @@ public class ServerUserAuthService extends AbstractCloseable implements Service,
 
     public ServerUserAuthService(Session s) throws IOException {
         boolean debugEnabled = log.isDebugEnabled();
-        serverSession = ValidateUtils.checkInstanceOf(s, ServerSession.class, "Server side service used on client side: %s", s);
+        serverSession = ValidateUtils.checkInstanceOf(s, AbstractServerSession.class, "Server side service used on client side: %s", s);
         if (s.isAuthenticated()) {
             throw new SshException("Session already authenticated");
         }
@@ -275,7 +275,7 @@ public class ServerUserAuthService extends AbstractCloseable implements Service,
 
     protected void handleAuthenticationSuccess(int cmd, Buffer buffer) throws Exception {
         String username = Objects.requireNonNull(currentAuth, "No current auth").getUsername();
-        ServerSession session = this.getSession();
+        AbstractServerSession session = (AbstractServerSession) this.getSession();
         boolean debugEnabled = log.isDebugEnabled();
         if (debugEnabled) {
             log.debug("handleAuthenticationSuccess({}@{}) {}",

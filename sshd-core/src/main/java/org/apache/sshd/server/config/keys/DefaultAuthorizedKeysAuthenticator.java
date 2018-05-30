@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.sshd.common.auth.UsernameHolder;
 import org.apache.sshd.common.config.keys.AuthorizedKeyEntry;
 import org.apache.sshd.common.config.keys.KeyUtils;
 import org.apache.sshd.common.util.OsUtils;
@@ -46,7 +45,7 @@ import org.apache.sshd.server.session.ServerSession;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class DefaultAuthorizedKeysAuthenticator extends AuthorizedKeysAuthenticator implements UsernameHolder {
+public class DefaultAuthorizedKeysAuthenticator extends AuthorizedKeysAuthenticator {
 
     /**
      * The default instance that enforces the same permissions regime as {@code OpenSSH}
@@ -87,7 +86,6 @@ public class DefaultAuthorizedKeysAuthenticator extends AuthorizedKeysAuthentica
         this.strict = strict;
     }
 
-    @Override
     public final String getUsername() {
         return user;
     }

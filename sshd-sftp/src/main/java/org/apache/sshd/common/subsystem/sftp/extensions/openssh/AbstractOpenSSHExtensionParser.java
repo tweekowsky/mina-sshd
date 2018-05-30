@@ -34,7 +34,9 @@ import org.apache.sshd.common.util.ValidateUtils;
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
 public abstract class AbstractOpenSSHExtensionParser extends AbstractParser<OpenSSHExtension> {
+
     public static class OpenSSHExtension implements NamedResource, Cloneable, Serializable {
+
         private static final long serialVersionUID = 5902797870154506909L;
         private final String name;
         private String version;

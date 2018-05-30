@@ -125,7 +125,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
     }
 
     @Override
-    public ClientChannel getClientChannel() {
+    public ClientChannel getChannel() {
         return channel;
     }
 
@@ -182,7 +182,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
         boolean traceEnabled = log.isTraceEnabled();
         for (int count = 1; receive(incoming); count++) {
             if (traceEnabled) {
-                log.trace("data({}) Processed {} data messages", getClientChannel(), count);
+                log.trace("data({}) Processed {} data messages", this.getChannel(), count);
             }
         }
 
@@ -247,7 +247,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
 
         if (log.isTraceEnabled()) {
             log.trace("process({}) id={}, type={}, len={}",
-                      getClientChannel(), id, SftpConstants.getCommandMessageName(type), length);
+                      this.getChannel(), id, SftpConstants.getCommandMessageName(type), length);
         }
 
         synchronized (messages) {
@@ -262,7 +262,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
         int len = buffer.available();
         if (log.isTraceEnabled()) {
             log.trace("send({}) cmd={}, len={}, id={}",
-                      getClientChannel(), SftpConstants.getCommandMessageName(cmd), len, id);
+                      this.getChannel(), SftpConstants.getCommandMessageName(cmd), len, id);
         }
 
         OutputStream dos = channel.getInvertedIn();
@@ -377,7 +377,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
         boolean traceEnabled = log.isTraceEnabled();
         if (traceEnabled) {
             log.trace("init({}) id={} type={} len={}",
-                      getClientChannel(), id, SftpConstants.getCommandMessageName(type), length);
+                      this.getChannel(), id, SftpConstants.getCommandMessageName(type), length);
         }
 
         if (type == SftpConstants.SSH_FXP_VERSION) {
@@ -387,14 +387,14 @@ public class DefaultSftpClient extends AbstractSftpClient {
             versionHolder.set(id);
 
             if (traceEnabled) {
-                log.trace("init({}) version={}", getClientChannel(), versionHolder);
+                log.trace("init({}) version={}", this.getChannel(), versionHolder);
             }
 
             while (buffer.available() > 0) {
                 String name = buffer.getString();
                 byte[] data = buffer.getBytes();
                 if (traceEnabled) {
-                    log.trace("init({}) added extension=", getClientChannel(), name);
+                    log.trace("init({}) added extension=", this.getChannel(), name);
                 }
                 extensions.put(name, data);
             }
@@ -404,7 +404,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
             String lang = buffer.getString();
             if (traceEnabled) {
                 log.trace("init({})[id={}] - status: {} [{}] {}",
-                          getClientChannel(), id, SftpConstants.getStatusName(substatus), lang, msg);
+                          this.getChannel(), id, SftpConstants.getStatusName(substatus), lang, msg);
             }
 
             throwStatusException(SftpConstants.SSH_FXP_INIT, id, substatus, msg, lang);
@@ -441,7 +441,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
 
         int selected = selector.selectVersion(getSession(), current, new ArrayList<>(available));
         if (log.isDebugEnabled()) {
-            log.debug("negotiateVersion({}) current={} {} -> {}", getClientChannel(), current, available, selected);
+            log.debug("negotiateVersion({}) current={} {} -> {}", this.getChannel(), current, available, selected);
         }
 
         if (selected == current) {

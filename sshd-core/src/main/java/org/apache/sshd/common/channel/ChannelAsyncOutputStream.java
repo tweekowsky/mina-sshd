@@ -34,22 +34,21 @@ import org.apache.sshd.common.session.Session;
 import org.apache.sshd.common.util.buffer.Buffer;
 import org.apache.sshd.common.util.closeable.AbstractCloseable;
 
-public class ChannelAsyncOutputStream extends AbstractCloseable implements IoOutputStream, ChannelHolder {
-    private final Channel channelInstance;
+public class ChannelAsyncOutputStream<S extends Session> extends AbstractCloseable implements IoOutputStream {
+    private final Channel<S> channelInstance;
     private final PacketWriter packetWriter;
     private final byte cmd;
     private final AtomicReference<IoWriteFutureImpl> pendingWrite = new AtomicReference<>();
     private final Object packetWriteId;
 
-    public ChannelAsyncOutputStream(Channel channel, byte cmd) {
+    public ChannelAsyncOutputStream(Channel<S> channel, byte cmd) {
         this.channelInstance = Objects.requireNonNull(channel, "No channel");
         this.packetWriter = channelInstance.resolveChannelStreamPacketWriter(channel, cmd);
         this.cmd = cmd;
         this.packetWriteId = channel.toString() + "[" + SshConstants.getCommandMessageName(cmd) + "]";
     }
 
-    @Override
-    public Channel getChannel() {
+    public Channel<S> getChannel() {
         return channelInstance;
     }
 
@@ -102,7 +101,7 @@ public class ChannelAsyncOutputStream extends AbstractCloseable implements IoOut
         Buffer buffer = future.getBuffer();
         int total = buffer.available();
         if (total > 0) {
-            Channel channel = getChannel();
+            Channel<S> channel = getChannel();
             Window remoteWindow = channel.getRemoteWindow();
             long length = Math.min(Math.min(remoteWindow.getSize(), total), remoteWindow.getPacketSize());
             if (log.isTraceEnabled()) {
@@ -120,7 +119,7 @@ public class ChannelAsyncOutputStream extends AbstractCloseable implements IoOut
                     throw new IllegalArgumentException("Command " + SshConstants.getCommandMessageName(cmd) + " length (" + length + ") exceeds int boundaries");
                 }
 
-                Session s = channel.getSession();
+                S s = channel.getSession();
                 Buffer buf = s.createBuffer(cmd, (int) length + 12);
                 buf.putInt(channel.getRecipient());
                 if (cmd == SshConstants.SSH_MSG_CHANNEL_EXTENDED_DATA) {

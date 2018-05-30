@@ -23,10 +23,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.sshd.common.AttributeStore;
 import org.apache.sshd.common.Closeable;
-import org.apache.sshd.common.FactoryManagerHolder;
+import org.apache.sshd.common.FactoryManager;
 import org.apache.sshd.common.PropertyResolver;
 import org.apache.sshd.common.Service;
-import org.apache.sshd.common.auth.MutableUserHolder;
 import org.apache.sshd.common.channel.ChannelListenerManager;
 import org.apache.sshd.common.channel.throttle.ChannelStreamPacketWriterResolverManager;
 import org.apache.sshd.common.cipher.CipherInformation;
@@ -57,11 +56,9 @@ public interface Session
                 ChannelStreamPacketWriterResolverManager,
                 PortForwardingEventListenerManager,
                 UnknownChannelReferenceHandlerManager,
-                FactoryManagerHolder,
                 PropertyResolver,
                 AttributeStore,
                 Closeable,
-                MutableUserHolder,
                 PacketWriter {
 
     /**
@@ -98,6 +95,13 @@ public interface Session
     }
 
     /**
+     * Retrieve the factory manager.
+     *
+     * @return the factory manager.
+     */
+    FactoryManager getFactoryManager();
+
+    /**
      * Retrieve the client version for this session.
      *
      * @return the client version.
@@ -110,6 +114,13 @@ public interface Session
      * @return the server version.
      */
     String getServerVersion();
+
+    /**
+     * Retrieve the user name associated to this session.
+     *
+     * @return the user name.
+     */
+    String getUsername();
 
     /**
      * Retrieve one of the negotiated values during the KEX stage

@@ -22,7 +22,6 @@ package org.apache.sshd.common.kex.dh;
 import org.apache.sshd.common.digest.Digest;
 import org.apache.sshd.common.kex.KeyExchange;
 import org.apache.sshd.common.session.Session;
-import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.session.helpers.AbstractSession;
 import org.apache.sshd.common.util.ValidateUtils;
 import org.apache.sshd.common.util.logging.AbstractLoggingBean;
@@ -30,7 +29,7 @@ import org.apache.sshd.common.util.logging.AbstractLoggingBean;
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public abstract class AbstractDHKeyExchange<S extends Session> extends AbstractLoggingBean implements KeyExchange, SessionHolder<S> {
+public abstract class AbstractDHKeyExchange<S extends Session> extends AbstractLoggingBean implements KeyExchange {
 
     protected byte[] v_s;
     protected byte[] v_c;
@@ -57,7 +56,6 @@ public abstract class AbstractDHKeyExchange<S extends Session> extends AbstractL
         this.i_c = ValidateUtils.checkNotNullAndNotEmpty(i_c, "No i_c value");
     }
 
-    @Override
     public S getSession() {
         return (S) session;
     }

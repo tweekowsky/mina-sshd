@@ -39,7 +39,6 @@ import org.apache.sshd.client.subsystem.sftp.extensions.BuiltinSftpClientExtensi
 import org.apache.sshd.client.subsystem.sftp.extensions.SftpClientExtension;
 import org.apache.sshd.client.subsystem.sftp.extensions.SftpClientExtensionFactory;
 import org.apache.sshd.common.SshException;
-import org.apache.sshd.common.channel.Channel;
 import org.apache.sshd.common.subsystem.sftp.SftpConstants;
 import org.apache.sshd.common.subsystem.sftp.SftpException;
 import org.apache.sshd.common.subsystem.sftp.SftpHelper;
@@ -62,8 +61,8 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
     }
 
     @Override
-    public Channel getChannel() {
-        return getClientChannel();
+    public String getName() {
+        return SftpConstants.SFTP_SUBSYSTEM_NAME;
     }
 
     @Override
@@ -196,7 +195,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
     protected void checkResponseStatus(int cmd, int id, int substatus, String msg, String lang) throws IOException {
         if (log.isTraceEnabled()) {
             log.trace("checkResponseStatus({})[id={}] cmd={} status={} lang={} msg={}",
-                      getClientChannel(), id, SftpConstants.getCommandMessageName(cmd),
+                      getChannel(), id, SftpConstants.getCommandMessageName(cmd),
                       SftpConstants.getStatusName(substatus), lang, msg);
         }
 
@@ -238,7 +237,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
             String lang = buffer.getString();
             if (log.isTraceEnabled()) {
                 log.trace("checkHandleResponse({})[id={}] {} - status: {} [{}] {}",
-                          getClientChannel(), id, SftpConstants.getCommandMessageName(cmd),
+                          getChannel(), id, SftpConstants.getCommandMessageName(cmd),
                           SftpConstants.getStatusName(substatus), lang, msg);
             }
             throwStatusException(cmd, id, substatus, msg, lang);
@@ -282,7 +281,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
             String lang = buffer.getString();
             if (log.isTraceEnabled()) {
                 log.trace("checkAttributesResponse()[id={}] {} - status: {} [{}] {}",
-                          getClientChannel(), id, SftpConstants.getCommandMessageName(cmd),
+                          getChannel(), id, SftpConstants.getCommandMessageName(cmd),
                           SftpConstants.getStatusName(substatus), lang, msg);
             }
             throwStatusException(cmd, id, substatus, msg, lang);
@@ -339,7 +338,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
             // TODO decide what to do if not-null and not TRUE
             if (log.isTraceEnabled()) {
                 log.trace("checkOneNameResponse({})[id={}] {} ({})[{}] eol={}: {}",
-                          getClientChannel(), id, SftpConstants.getCommandMessageName(cmd),
+                          getChannel(), id, SftpConstants.getCommandMessageName(cmd),
                           name, longName, indicator, attrs);
             }
             return name;
@@ -351,7 +350,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
             String lang = buffer.getString();
             if (log.isTraceEnabled()) {
                 log.trace("checkOneNameResponse({})[id={}] {} status: {} [{}] {}",
-                          getClientChannel(), id, SftpConstants.getCommandMessageName(cmd),
+                          getChannel(), id, SftpConstants.getCommandMessageName(cmd),
                           SftpConstants.getStatusName(substatus), lang, msg);
             }
 
@@ -792,7 +791,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
             Boolean indicator = SftpHelper.getEndOfFileIndicatorValue(buffer, getVersion());
             if (log.isTraceEnabled()) {
                 log.trace("checkDataResponse({}][id={}] {} offset={}, len={}, EOF={}",
-                          getClientChannel(), SftpConstants.getCommandMessageName(cmd),
+                          getChannel(), SftpConstants.getCommandMessageName(cmd),
                           id, dstoff, len, indicator);
             }
             if (eofSignalled != null) {
@@ -808,7 +807,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
             String lang = buffer.getString();
             if (log.isTraceEnabled()) {
                 log.trace("checkDataResponse({})[id={}] {} status: {} [{}] {}",
-                          getClientChannel(), id, SftpConstants.getCommandMessageName(cmd),
+                          getChannel(), id, SftpConstants.getCommandMessageName(cmd),
                           SftpConstants.getStatusName(substatus), lang, msg);
             }
 
@@ -850,7 +849,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
 
         if (log.isTraceEnabled()) {
             log.trace("write({}) handle={}, file-offset={}, buf-offset={}, len={}",
-                      getClientChannel(), handle, fileOffset, srcOffset, len);
+                      getChannel(), handle, fileOffset, srcOffset, len);
         }
 
         byte[] id = Objects.requireNonNull(handle, "No handle").getIdentifier();
@@ -945,7 +944,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
         if (type == SftpConstants.SSH_FXP_NAME) {
             int len = buffer.getInt();
             int version = getVersion();
-            ClientChannel channel = getClientChannel();
+            ClientChannel channel = getChannel();
             boolean debugEnabled = log.isDebugEnabled();
             if (debugEnabled) {
                 log.debug("checkDirResponse({}}[id={}] reading {} entries", channel, id, len);
@@ -986,7 +985,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
             String lang = buffer.getString();
             if (traceEnabled) {
                 log.trace("checkDirResponse({})[id={}] - status: {} [{}] {}",
-                          getClientChannel(), id, SftpConstants.getStatusName(substatus), lang, msg);
+                          getChannel(), id, SftpConstants.getStatusName(substatus), lang, msg);
             }
 
             if (substatus == SftpConstants.SSH_FX_EOF) {

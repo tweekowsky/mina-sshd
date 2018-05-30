@@ -67,7 +67,6 @@ public class ChannelPipedInputStream extends InputStream implements ChannelPiped
         this.timeout = windowTimeout;
     }
 
-    @Override
     public boolean isOpen() {
         return open.get();
     }

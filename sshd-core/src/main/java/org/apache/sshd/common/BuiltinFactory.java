@@ -31,6 +31,7 @@ import org.apache.sshd.common.util.GenericUtils;
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
 public interface BuiltinFactory<T> extends NamedFactory<T>, OptionalFeature {
+
     static <T, E extends BuiltinFactory<T>> List<NamedFactory<T>> setUpFactories(
             boolean ignoreUnsupported, Collection<? extends E> preferred) {
         return GenericUtils.stream(preferred)

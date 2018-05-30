@@ -37,7 +37,6 @@ public interface ServerSession
     /**
      * @return The {@link ServerFactoryManager} for this session
      */
-    @Override
     ServerFactoryManager getFactoryManager();
 
     /**

@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.sshd.client.auth.keyboard.UserInteraction;
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.GenericUtils;
 
 /**
@@ -60,7 +59,7 @@ import org.apache.sshd.common.util.GenericUtils;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class InteractivePasswordIdentityProvider implements Iterator<String>, SessionHolder<ClientSession> {
+public class InteractivePasswordIdentityProvider implements Iterator<String> {
     /** Special marker to indicate that we exhausted all attempts */
     protected static final String EOF = "EOF";
 
@@ -75,7 +74,6 @@ public class InteractivePasswordIdentityProvider implements Iterator<String>, Se
         this.prompt = prompt;
     }
 
-    @Override
     public ClientSession getSession() {
         return clientSession;
     }

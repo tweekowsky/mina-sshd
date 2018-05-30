@@ -23,20 +23,14 @@ import java.io.Closeable;
 
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.common.NamedResource;
-import org.apache.sshd.common.channel.ChannelHolder;
-import org.apache.sshd.common.session.SessionHolder;
 
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface SubsystemClient
-        extends SessionHolder<ClientSession>,
-                NamedResource,
-                ChannelHolder,
-                Closeable {
-    /**
-     * @return The underlying {@link ClientChannel} used
-     */
-    ClientChannel getClientChannel();
+public interface SubsystemClient extends Closeable {
+
+    ClientSession getSession();
+
+    ClientChannel getChannel();
+
 }

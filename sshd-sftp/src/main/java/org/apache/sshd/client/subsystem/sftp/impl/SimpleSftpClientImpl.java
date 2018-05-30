@@ -30,7 +30,6 @@ import org.apache.sshd.client.subsystem.sftp.SftpClient;
 import org.apache.sshd.client.subsystem.sftp.SftpClientFactory;
 import org.apache.sshd.client.subsystem.sftp.SimpleSftpClient;
 import org.apache.sshd.common.util.GenericUtils;
-import org.apache.sshd.common.util.io.functors.IOFunction;
 import org.apache.sshd.common.util.logging.AbstractLoggingBean;
 
 public class SimpleSftpClientImpl extends AbstractLoggingBean implements SimpleSftpClient {
@@ -69,26 +68,18 @@ public class SimpleSftpClientImpl extends AbstractLoggingBean implements SimpleS
 
     @Override
     public SftpClient sftpLogin(SocketAddress target, String username, String password) throws IOException {
-        return createSftpClient(client -> client.sessionLogin(target, username, password));
+        SimpleClient client = getClient();
+        ClientSession session = client.sessionLogin(target, username, password);
+        SftpClient sftp = createSftpClient(session);
+        return sftp;
     }
 
     @Override
     public SftpClient sftpLogin(SocketAddress target, String username, KeyPair identity) throws IOException {
-        return createSftpClient(client -> client.sessionLogin(target, username, identity));
-    }
-
-    protected SftpClient createSftpClient(IOFunction<? super SimpleClient, ? extends ClientSession> sessionProvider) throws IOException {
         SimpleClient client = getClient();
-        ClientSession session = sessionProvider.apply(client);
-        try {
-            SftpClient sftp = createSftpClient(session);
-            session = null; // disable auto-close at finally block
-            return sftp;
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
+        ClientSession session = client.sessionLogin(target, username, identity);
+        SftpClient sftp = createSftpClient(session);
+        return sftp;
     }
 
     protected SftpClient createSftpClient(ClientSession session) throws IOException {

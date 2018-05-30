@@ -58,14 +58,14 @@ public class DefaultScpClient extends AbstractScpClient {
     }
 
     @Override
-    public ClientSession getClientSession() {
+    public ClientSession getSession() {
         return clientSession;
     }
 
     @Override
     public void download(String remote, OutputStream local) throws IOException {
         String cmd = ScpClient.createReceiveCommand(remote, Collections.emptyList());
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         ChannelExec channel = openCommandChannel(session, cmd);
         try (InputStream invOut = channel.getInvertedOut();
              OutputStream invIn = channel.getInvertedIn()) {
@@ -81,7 +81,7 @@ public class DefaultScpClient extends AbstractScpClient {
     @Override
     protected void download(String remote, FileSystem fs, Path local, Collection<Option> options) throws IOException {
         String cmd = ScpClient.createReceiveCommand(remote, options);
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         ChannelExec channel = openCommandChannel(session, cmd);
         try (InputStream invOut = channel.getInvertedOut();
              OutputStream invIn = channel.getInvertedIn()) {
@@ -105,7 +105,7 @@ public class DefaultScpClient extends AbstractScpClient {
             : ValidateUtils.checkNotNullAndNotEmpty(remote.substring(namePos + 1), "No name value in remote=%s", remote);
         Collection<Option> options = (time != null) ? EnumSet.of(Option.PreserveAttributes) : Collections.emptySet();
         String cmd = ScpClient.createSendCommand(remote, options);
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         ChannelExec channel = openCommandChannel(session, cmd);
         try (InputStream invOut = channel.getInvertedOut();
              OutputStream invIn = channel.getInvertedIn()) {
@@ -129,7 +129,7 @@ public class DefaultScpClient extends AbstractScpClient {
         }
 
         String cmd = ScpClient.createSendCommand(remote, options);
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         ChannelExec channel = openCommandChannel(session, cmd);
         try {
             FactoryManager manager = session.getFactoryManager();

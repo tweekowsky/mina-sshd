@@ -23,7 +23,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.sshd.common.FactoryManager;
-import org.apache.sshd.common.FactoryManagerHolder;
 import org.apache.sshd.common.util.closeable.AbstractCloseable;
 import org.apache.sshd.common.util.threads.ExecutorServiceCarrier;
 
@@ -32,7 +31,7 @@ import org.apache.sshd.common.util.threads.ExecutorServiceCarrier;
  */
 public abstract class AbstractIoServiceFactory
                 extends AbstractCloseable
-                implements IoServiceFactory, FactoryManagerHolder, ExecutorServiceCarrier {
+                implements IoServiceFactory, ExecutorServiceCarrier {
 
     private final FactoryManager manager;
     private final ExecutorService executor;
@@ -44,7 +43,6 @@ public abstract class AbstractIoServiceFactory
         shutdownExecutor = shutdownOnExit;
     }
 
-    @Override
     public final FactoryManager getFactoryManager() {
         return manager;
     }

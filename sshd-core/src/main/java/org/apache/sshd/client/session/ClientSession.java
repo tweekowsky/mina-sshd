@@ -93,6 +93,12 @@ public interface ClientSession
             Collections.unmodifiableSet(EnumSet.of(ClientChannelEvent.CLOSED));
 
     /**
+     * Set the user name for this session
+     * @param username the user name
+     */
+    void setUsername(String username);
+
+    /**
      * Returns the original address (after having been translated through host
      * configuration entries if any) that was request to connect. It contains the
      * original host or address string that was used. <B>Note:</B> this may be

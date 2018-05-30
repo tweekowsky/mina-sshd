@@ -51,7 +51,7 @@ import org.apache.sshd.common.util.closeable.AbstractCloseable;
  */
 public class ClientUserAuthService
         extends AbstractCloseable
-        implements Service, SessionHolder<ClientSession> {
+        implements Service {
 
     /**
      * The AuthFuture that is being used by the current auth request.  This encodes the state.

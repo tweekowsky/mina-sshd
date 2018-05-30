@@ -253,7 +253,7 @@ public class ClientTest extends BaseTestSupport {
             if (instance instanceof Channel) {
                 expectedChannel = (Channel) instance;
             } else if (instance instanceof SubsystemClient) {
-                expectedChannel = ((SubsystemClient) instance).getClientChannel();
+                expectedChannel = ((SubsystemClient) instance).getChannel();
             } else {
                 throw new UnsupportedOperationException("Unknown test instance type" + instance.getClass().getSimpleName());
             }

@@ -28,7 +28,6 @@ import java.util.Objects;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.client.simple.SimpleClient;
 import org.apache.sshd.common.util.GenericUtils;
-import org.apache.sshd.common.util.io.functors.IOFunction;
 import org.apache.sshd.common.util.logging.AbstractLoggingBean;
 
 /**
@@ -71,17 +70,16 @@ public class SimpleScpClientImpl extends AbstractLoggingBean implements SimpleSc
 
     @Override
     public ScpClient scpLogin(SocketAddress target, String username, String password) throws IOException {
-        return createScpClient(client -> client.sessionLogin(target, username, password));
+        SimpleClient client = getClient();
+        ClientSession session = client.sessionLogin(target, username, password);
+        ScpClient scp = createScpClient(session);
+        return scp;
     }
 
     @Override
     public ScpClient scpLogin(SocketAddress target, String username, KeyPair identity) throws IOException {
-        return createScpClient(client -> client.sessionLogin(target, username, identity));
-    }
-
-    protected ScpClient createScpClient(IOFunction<? super SimpleClient, ? extends ClientSession> sessionProvider) throws IOException {
         SimpleClient client = getClient();
-        ClientSession session = sessionProvider.apply(client);
+        ClientSession session = client.sessionLogin(target, username, identity);
         ScpClient scp = createScpClient(session);
         return scp;
     }

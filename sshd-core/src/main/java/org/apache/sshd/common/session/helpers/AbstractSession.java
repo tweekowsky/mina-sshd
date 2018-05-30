@@ -395,7 +395,6 @@ public abstract class AbstractSession extends AbstractKexFactoryManager implemen
         return (s == null) ? null : s.getRemoteAddress();
     }
 
-    @Override
     public FactoryManager getFactoryManager() {
         return factoryManager;
     }
@@ -2245,7 +2244,6 @@ public abstract class AbstractSession extends AbstractKexFactoryManager implemen
         return username;
     }
 
-    @Override
     public void setUsername(String username) {
         this.username = username;
     }

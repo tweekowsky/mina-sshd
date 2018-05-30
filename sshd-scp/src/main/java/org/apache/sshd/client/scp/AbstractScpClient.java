@@ -57,11 +57,6 @@ public abstract class AbstractScpClient extends AbstractLoggingBean implements S
     }
 
     @Override
-    public final ClientSession getSession() {
-        return getClientSession();
-    }
-
-    @Override
     public boolean isOpen() {
         return getSession().isOpen();
     }
@@ -130,7 +125,7 @@ public abstract class AbstractScpClient extends AbstractLoggingBean implements S
     public void download(String remote, String local, Collection<Option> options) throws IOException {
         local = ValidateUtils.checkNotNullAndNotEmpty(local, "Invalid argument local: %s", local);
 
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         FactoryManager manager = session.getFactoryManager();
         FileSystemFactory factory = manager.getFileSystemFactory();
         FileSystem fs = factory.createFileSystem(session);
@@ -198,7 +193,7 @@ public abstract class AbstractScpClient extends AbstractLoggingBean implements S
         long waitEnd = System.nanoTime();
         if (log.isDebugEnabled()) {
             log.debug("handleCommandExitStatus({}) cmd='{}', waited={} nanos, events={}",
-                      getClientSession(), cmd, waitEnd - waitStart, events);
+                      getSession(), cmd, waitEnd - waitStart, events);
         }
 
         /*
@@ -220,7 +215,7 @@ public abstract class AbstractScpClient extends AbstractLoggingBean implements S
      */
     protected void handleCommandExitStatus(String cmd, Integer exitStatus) throws IOException {
         if (log.isDebugEnabled()) {
-            log.debug("handleCommandExitStatus({}) cmd='{}', exit-status={}", getClientSession(), cmd, ScpHelper.getExitStatusName(exitStatus));
+            log.debug("handleCommandExitStatus({}) cmd='{}', exit-status={}", getSession(), cmd, ScpHelper.getExitStatusName(exitStatus));
         }
 
         if (exitStatus == null) {
@@ -232,7 +227,7 @@ public abstract class AbstractScpClient extends AbstractLoggingBean implements S
             case ScpHelper.OK:  // do nothing
                 break;
             case ScpHelper.WARNING:
-                log.warn("handleCommandExitStatus({}) cmd='{}' may have terminated with some problems", getClientSession(), cmd);
+                log.warn("handleCommandExitStatus({}) cmd='{}' may have terminated with some problems", getSession(), cmd);
                 break;
             default:
                 throw new ScpException("Failed to run command='" + cmd + "': " + ScpHelper.getExitStatusName(exitStatus), exitStatus);
