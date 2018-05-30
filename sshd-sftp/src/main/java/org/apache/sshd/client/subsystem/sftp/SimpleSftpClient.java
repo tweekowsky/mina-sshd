@@ -19,11 +19,11 @@
 
 package org.apache.sshd.client.subsystem.sftp;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.channels.Channel;
 import java.security.KeyPair;
 import java.util.Objects;
 
@@ -35,7 +35,7 @@ import org.apache.sshd.common.util.ValidateUtils;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface SimpleSftpClient extends Channel {
+public interface SimpleSftpClient extends Closeable {
     /**
      * Creates an SFTP session on the default port and logs in using the provided credentials
      *

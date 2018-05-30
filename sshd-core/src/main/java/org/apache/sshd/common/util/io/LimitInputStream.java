@@ -22,7 +22,6 @@ package org.apache.sshd.common.util.io;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.Channel;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -30,7 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class LimitInputStream extends FilterInputStream implements Channel {
+public class LimitInputStream extends FilterInputStream {
     private final AtomicBoolean open = new AtomicBoolean(true);
     private long remaining;
 
@@ -39,7 +38,6 @@ public class LimitInputStream extends FilterInputStream implements Channel {
         remaining = length;
     }
 
-    @Override
     public boolean isOpen() {
         return open.get();
     }

@@ -180,7 +180,6 @@ public class SimpleSftpClientImpl extends AbstractLoggingBean implements SimpleS
         });
     }
 
-    @Override
     public boolean isOpen() {
         return true;
     }

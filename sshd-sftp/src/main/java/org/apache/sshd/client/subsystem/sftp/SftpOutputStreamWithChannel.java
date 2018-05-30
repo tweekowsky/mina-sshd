@@ -19,19 +19,19 @@
 package org.apache.sshd.client.subsystem.sftp;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Objects;
 
 import org.apache.sshd.client.subsystem.sftp.SftpClient.CloseableHandle;
 import org.apache.sshd.client.subsystem.sftp.SftpClient.OpenMode;
-import org.apache.sshd.common.util.io.OutputStreamWithChannel;
 
 /**
  * Implements an output stream for a given remote file
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class SftpOutputStreamWithChannel extends OutputStreamWithChannel {
+public class SftpOutputStreamWithChannel extends OutputStream {
     private final SftpClient client;
     private final String path;
     private final byte[] bb =  new byte[1];
@@ -65,7 +65,6 @@ public class SftpOutputStreamWithChannel extends OutputStreamWithChannel {
         return path;
     }
 
-    @Override
     public boolean isOpen() {
         return (handle != null) && handle.isOpen();
     }

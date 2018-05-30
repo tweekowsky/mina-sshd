@@ -20,6 +20,7 @@ package org.apache.sshd.client.scp;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,7 +40,7 @@ import org.apache.sshd.common.util.ValidateUtils;
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface ScpClient extends SessionHolder<ClientSession>, ClientSessionHolder {
+public interface ScpClient extends SessionHolder<ClientSession>, ClientSessionHolder, Closeable {
     enum Option {
         Recursive,
         PreserveAttributes,
@@ -141,6 +142,8 @@ public interface ScpClient extends SessionHolder<ClientSession>, ClientSessionHo
     }
 
     void upload(InputStream local, String remote, long size, Collection<PosixFilePermission> perms, ScpTimestamp time) throws IOException;
+
+    boolean isOpen();
 
     static String createSendCommand(String remote, Collection<Option> options) {
         StringBuilder sb = new StringBuilder(remote.length() + Long.SIZE).append(ScpHelper.SCP_COMMAND_PREFIX);

@@ -20,7 +20,6 @@ package org.apache.sshd.client.subsystem.sftp;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.nio.channels.Channel;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -40,7 +39,7 @@ import org.apache.sshd.common.util.logging.AbstractLoggingBean;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class SftpDirEntryIterator extends AbstractLoggingBean implements Iterator<DirEntry>, Channel {
+public class SftpDirEntryIterator extends AbstractLoggingBean implements Iterator<DirEntry>, Closeable {
     private final AtomicReference<Boolean> eolIndicator = new AtomicReference<>();
     private final AtomicBoolean open = new AtomicBoolean(true);
     private final SftpClient client;
@@ -130,7 +129,6 @@ public class SftpDirEntryIterator extends AbstractLoggingBean implements Iterato
         return entry;
     }
 
-    @Override
     public boolean isOpen() {
         return open.get();
     }

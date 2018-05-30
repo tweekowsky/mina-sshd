@@ -85,7 +85,7 @@ public class ThrottlingPacketWriterTest extends BaseTestSupport {
 
     @Test(expected = ClosedSelectorException.class)
     public void testThrottlerDoesNotSendIfClosed() throws IOException {
-        try (PacketWriter throttler = new ThrottlingPacketWriter(new MockPacketWriter(), Byte.SIZE, TimeUnit.SECONDS.toMillis(3L))) {
+        try (ThrottlingPacketWriter throttler = new ThrottlingPacketWriter(new MockPacketWriter(), Byte.SIZE, TimeUnit.SECONDS.toMillis(3L))) {
             assertTrue("Throttler not marked as open", throttler.isOpen());
             throttler.close();
             assertFalse("Throttler not marked as closed", throttler.isOpen());
@@ -97,7 +97,7 @@ public class ThrottlingPacketWriterTest extends BaseTestSupport {
 
     @Test(expected = ClosedSelectorException.class)
     public void testThrottlerStopsSendingIfExceptionSignaledOnFutureOperationCompletion() throws IOException {
-        try (PacketWriter throttler = new ThrottlingPacketWriter(new MockPacketWriter(), Byte.SIZE, TimeUnit.SECONDS.toMillis(3L))) {
+        try (ThrottlingPacketWriter throttler = new ThrottlingPacketWriter(new MockPacketWriter(), Byte.SIZE, TimeUnit.SECONDS.toMillis(3L))) {
             assertTrue("Throttler not marked as open", throttler.isOpen());
 
             IoWriteFutureImpl futureImpl = (IoWriteFutureImpl) throttler.writePacket(new ByteArrayBuffer(Byte.SIZE));
@@ -114,7 +114,6 @@ public class ThrottlingPacketWriterTest extends BaseTestSupport {
             super();
         }
 
-        @Override
         public boolean isOpen() {
             return true;
         }

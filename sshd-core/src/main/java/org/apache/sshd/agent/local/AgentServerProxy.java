@@ -70,7 +70,6 @@ public class AgentServerProxy extends AbstractLoggingBean implements SshAgentSer
         return id;
     }
 
-    @Override
     public boolean isOpen() {
         return open.get();
     }

@@ -19,9 +19,9 @@
 
 package org.apache.sshd.client.simple;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.nio.channels.Channel;
 import java.security.KeyPair;
 import java.util.Objects;
 
@@ -131,12 +131,12 @@ public abstract class AbstractSimpleClientSessionCreator extends AbstractSimpleC
      * Wraps an existing {@link ClientSessionCreator} into a {@link SimpleClient}
      *
      * @param creator The {@link ClientSessionCreator} - never {@code null}
-     * @param channel The {@link Channel} representing the creator for
-     * relaying {@link #isOpen()} and {@link #close()} calls
+     * @param channel The {@link Closeable} representing the creator for
+     * relaying {@link #close()} calls
      * @return The {@link SimpleClient} wrapper. <B>Note:</B> closing the wrapper
      * also closes the underlying sessions creator.
      */
-    public static SimpleClient wrap(final ClientSessionCreator creator, final Channel channel) {
+    public static SimpleClient wrap(final ClientSessionCreator creator, final Closeable channel) {
         Objects.requireNonNull(creator, "No sessions creator");
         Objects.requireNonNull(channel, "No channel");
         return new AbstractSimpleClientSessionCreator() {
@@ -153,11 +153,6 @@ public abstract class AbstractSimpleClientSessionCreator extends AbstractSimpleC
             @Override
             public ConnectFuture connect(HostConfigEntry hostConfig) throws IOException {
                 return creator.connect(hostConfig);
-            }
-
-            @Override
-            public boolean isOpen() {
-                return channel.isOpen();
             }
 
             @Override

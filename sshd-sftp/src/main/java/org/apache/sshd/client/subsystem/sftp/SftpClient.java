@@ -22,7 +22,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.Channel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.OpenOption;
@@ -209,10 +208,11 @@ public interface SftpClient extends SubsystemClient {
     }
 
     // CHECKSTYLE:OFF
-    abstract class CloseableHandle extends Handle implements Channel, Closeable {
+    abstract class CloseableHandle extends Handle implements Closeable {
         protected CloseableHandle(String path, byte[] id) {
             super(path, id);
         }
+        public abstract boolean isOpen();
     }
     // CHECKSTYLE:ON
 
@@ -591,6 +591,8 @@ public interface SftpClient extends SubsystemClient {
      * where key=extension name (case <U>insensitive</U>)
      */
     NavigableMap<String, byte[]> getServerExtensions();
+
+    boolean isOpen();
 
     boolean isClosing();
 

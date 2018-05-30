@@ -54,7 +54,6 @@ public class AgentImpl implements SshAgent {
         super();
     }
 
-    @Override
     public boolean isOpen() {
         return open.get();
     }

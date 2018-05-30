@@ -224,7 +224,7 @@ public class RootedFileSystemProviderTest extends AssertableFile {
         Path tempFolder = assertHierarchyTargetFolderExists(getTempTargetFolder());
         Path file = Files.createTempFile(tempFolder, getCurrentTestName(), ".txt");
         try (FileSystem fs = provider.newFileSystem(tempFolder, Collections.emptyMap());
-             Channel channel = provider.newByteChannel(fs.getPath(file.getFileName().toString()), Collections.emptySet())) {
+            Channel channel = provider.newByteChannel(fs.getPath(file.getFileName().toString()), Collections.emptySet())) {
             assertTrue("Channel not open", channel.isOpen());
         }
     }

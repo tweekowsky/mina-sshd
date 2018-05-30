@@ -19,19 +19,19 @@
 package org.apache.sshd.client.subsystem.sftp;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Objects;
 
 import org.apache.sshd.client.subsystem.sftp.SftpClient.CloseableHandle;
 import org.apache.sshd.client.subsystem.sftp.SftpClient.OpenMode;
-import org.apache.sshd.common.util.io.InputStreamWithChannel;
 
 /**
  * Implements an input stream for reading from a remote file
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class SftpInputStreamWithChannel extends InputStreamWithChannel {
+public class SftpInputStreamWithChannel extends InputStream {
     private final SftpClient client;
     private final String path;
     private byte[] bb;
@@ -67,7 +67,6 @@ public class SftpInputStreamWithChannel extends InputStreamWithChannel {
         return path;
     }
 
-    @Override
     public boolean isOpen() {
         return (handle != null) && handle.isOpen();
     }

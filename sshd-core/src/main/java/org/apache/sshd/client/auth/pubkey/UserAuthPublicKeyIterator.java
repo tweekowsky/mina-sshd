@@ -19,8 +19,8 @@
 
 package org.apache.sshd.client.auth.pubkey;
 
+import java.io.Closeable;
 import java.io.IOException;
-import java.nio.channels.Channel;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -40,7 +40,7 @@ import org.apache.sshd.common.util.GenericUtils;
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class UserAuthPublicKeyIterator extends AbstractKeyPairIterator<PublicKeyIdentity> implements Channel {
+public class UserAuthPublicKeyIterator extends AbstractKeyPairIterator<PublicKeyIdentity> implements Closeable {
 
     private final AtomicBoolean open = new AtomicBoolean(true);
     private Iterator<? extends PublicKeyIdentity> current;
@@ -95,7 +95,6 @@ public class UserAuthPublicKeyIterator extends AbstractKeyPairIterator<PublicKey
         return current.next();
     }
 
-    @Override
     public boolean isOpen() {
         return open.get();
     }

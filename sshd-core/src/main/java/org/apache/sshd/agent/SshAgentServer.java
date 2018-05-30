@@ -18,10 +18,10 @@
  */
 package org.apache.sshd.agent;
 
-import java.nio.channels.Channel;
+import java.io.Closeable;
 import java.util.concurrent.TimeUnit;
 
-public interface SshAgentServer extends Channel {
+public interface SshAgentServer extends Closeable {
 
     /**
      * Value that can be set on the {@link org.apache.sshd.common.FactoryManager}

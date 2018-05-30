@@ -108,7 +108,6 @@ public class ThrottlingPacketWriter extends AbstractLoggingBean implements Packe
         return maxWait;
     }
 
-    @Override
     public boolean isOpen() {
         return open.get();
     }

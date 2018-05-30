@@ -20,14 +20,13 @@ package org.apache.sshd.common.channel;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.channels.Channel;
 
 /**
  * TODO Add javadoc
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class ChannelPipedOutputStream extends OutputStream implements Channel {
+public class ChannelPipedOutputStream extends OutputStream {
 
     private final ChannelPipedSink sink;
     private final byte[] b = new byte[1];
@@ -53,7 +52,6 @@ public class ChannelPipedOutputStream extends OutputStream implements Channel {
         sink.receive(b, off, len);
     }
 
-    @Override
     public boolean isOpen() {
         return !closed;
     }

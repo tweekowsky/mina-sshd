@@ -19,8 +19,6 @@
 
 package org.apache.sshd.client.simple;
 
-import java.nio.channels.Channel;
-
 /**
  * Provides a simplified and <U>synchronous</U> view of the available SSH client
  * functionality. If more fine-grained control and configuration of the SSH client
@@ -30,7 +28,6 @@ import java.nio.channels.Channel;
  */
 public interface SimpleClient
         extends SimpleClientConfigurator,
-                SimpleSessionClient,
-                Channel {
+                SimpleSessionClient {
     // marker interface
 }

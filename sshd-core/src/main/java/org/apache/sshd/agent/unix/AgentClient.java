@@ -78,7 +78,6 @@ public class AgentClient extends AbstractAgentProxy implements Runnable {
         }
     }
 
-    @Override
     public boolean isOpen() {
         return open.get();
     }

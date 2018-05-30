@@ -70,40 +70,33 @@ public class SimpleScpClientImpl extends AbstractLoggingBean implements SimpleSc
     }
 
     @Override
-    public CloseableScpClient scpLogin(SocketAddress target, String username, String password) throws IOException {
+    public ScpClient scpLogin(SocketAddress target, String username, String password) throws IOException {
         return createScpClient(client -> client.sessionLogin(target, username, password));
     }
 
     @Override
-    public CloseableScpClient scpLogin(SocketAddress target, String username, KeyPair identity) throws IOException {
+    public ScpClient scpLogin(SocketAddress target, String username, KeyPair identity) throws IOException {
         return createScpClient(client -> client.sessionLogin(target, username, identity));
     }
 
-    protected CloseableScpClient createScpClient(IOFunction<? super SimpleClient, ? extends ClientSession> sessionProvider) throws IOException {
+    protected ScpClient createScpClient(IOFunction<? super SimpleClient, ? extends ClientSession> sessionProvider) throws IOException {
         SimpleClient client = getClient();
         ClientSession session = sessionProvider.apply(client);
-        try {
-            CloseableScpClient scp = createScpClient(session);
-            session = null; // disable auto-close at finally block
-            return scp;
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
+        ScpClient scp = createScpClient(session);
+        return scp;
     }
 
-    protected CloseableScpClient createScpClient(ClientSession session) throws IOException {
+    protected ScpClient createScpClient(ClientSession session) throws IOException {
         try {
             ScpClientCreator creator = getScpClientCreator();
             ScpClient client = creator.createScpClient(Objects.requireNonNull(session, "No client session"));
             return createScpClient(session, client);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.warn("createScpClient({}) failed ({}) to create proxy: {}",
                      session, e.getClass().getSimpleName(), e.getMessage());
             try {
                 session.close();
-            } catch (Exception t) {
+            } catch (Throwable t) {
                 if (log.isDebugEnabled()) {
                     log.debug("createScpClient({}) failed ({}) to close session: {}",
                               session, t.getClass().getSimpleName(), t.getMessage());
@@ -119,10 +112,10 @@ public class SimpleScpClientImpl extends AbstractLoggingBean implements SimpleSc
         }
     }
 
-    protected CloseableScpClient createScpClient(ClientSession session, ScpClient client) throws IOException {
+    protected ScpClient createScpClient(ClientSession session, ScpClient client) throws IOException {
         ClassLoader loader = getClass().getClassLoader();
-        Class<?>[] interfaces = {CloseableScpClient.class};
-        return (CloseableScpClient) Proxy.newProxyInstance(loader, interfaces, (proxy, method, args) -> {
+        Class<?>[] interfaces = {ScpClient.class};
+        return (ScpClient) Proxy.newProxyInstance(loader, interfaces, (proxy, method, args) -> {
             String name = method.getName();
             try {
                 // The Channel implementation is provided by the session
@@ -133,7 +126,7 @@ public class SimpleScpClientImpl extends AbstractLoggingBean implements SimpleSc
                 }
             } catch (Throwable t) {
                 if (log.isTraceEnabled()) {
-                    log.trace("invoke(CloseableScpClient#{}) failed ({}) to execute: {}",
+                    log.trace("invoke(ScpClient#{}) failed ({}) to execute: {}",
                               name, t.getClass().getSimpleName(), t.getMessage());
                 }
                 throw t;
@@ -141,7 +134,6 @@ public class SimpleScpClientImpl extends AbstractLoggingBean implements SimpleSc
         });
     }
 
-    @Override
     public boolean isOpen() {
         return true;
     }

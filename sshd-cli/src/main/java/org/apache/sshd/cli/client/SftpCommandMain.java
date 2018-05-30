@@ -20,6 +20,7 @@
 package org.apache.sshd.cli.client;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +29,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.nio.channels.Channel;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -79,7 +79,7 @@ import org.apache.sshd.common.util.threads.ThreadUtils;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class SftpCommandMain extends SshClientCliSupport implements Channel {
+public class SftpCommandMain extends SshClientCliSupport implements Closeable {
     /**
      * Command line option used to indicate a non-default port number
      */
@@ -234,7 +234,6 @@ public class SftpCommandMain extends SshClientCliSupport implements Channel {
         cwdLocal = path;
     }
 
-    @Override
     public boolean isOpen() {
         return client.isOpen();
     }

@@ -35,11 +35,6 @@ public class AgentDelegate implements SshAgent {
     }
 
     @Override
-    public boolean isOpen() {
-        return agent.isOpen();
-    }
-
-    @Override
     public void close() throws IOException {
         // ignored
     }

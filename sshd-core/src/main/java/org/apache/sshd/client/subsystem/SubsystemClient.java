@@ -19,7 +19,7 @@
 
 package org.apache.sshd.client.subsystem;
 
-import java.nio.channels.Channel;
+import java.io.Closeable;
 
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.session.ClientSession;
@@ -36,7 +36,7 @@ public interface SubsystemClient
                 ClientSessionHolder,
                 NamedResource,
                 ChannelHolder,
-                Channel {
+                Closeable {
     /**
      * @return The underlying {@link ClientChannel} used
      */

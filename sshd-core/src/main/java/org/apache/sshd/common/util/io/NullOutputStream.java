@@ -21,21 +21,19 @@ package org.apache.sshd.common.util.io;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.channels.Channel;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A {code /dev/null} output stream
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class NullOutputStream extends OutputStream implements Channel {
+public class NullOutputStream extends OutputStream {
     private final AtomicBoolean open = new AtomicBoolean(true);
 
     public NullOutputStream() {
         super();
     }
 
-    @Override
     public boolean isOpen() {
         return open.get();
     }

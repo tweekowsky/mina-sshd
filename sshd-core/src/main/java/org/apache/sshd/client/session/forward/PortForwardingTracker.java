@@ -19,7 +19,7 @@
 
 package org.apache.sshd.client.session.forward;
 
-import java.nio.channels.Channel;
+import java.io.Closeable;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -30,7 +30,7 @@ import org.apache.sshd.common.util.net.SshdSocketAddress;
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public abstract class PortForwardingTracker implements Channel, ClientSessionHolder {
+public abstract class PortForwardingTracker implements Closeable, ClientSessionHolder {
     protected final AtomicBoolean open = new AtomicBoolean(true);
     private final ClientSession session;
     private final SshdSocketAddress localAddress;
@@ -42,7 +42,6 @@ public abstract class PortForwardingTracker implements Channel, ClientSessionHol
         this.boundAddress  = Objects.requireNonNull(boundAddress, "No bound address specified");
     }
 
-    @Override
     public boolean isOpen() {
         return open.get();
     }

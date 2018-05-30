@@ -20,7 +20,6 @@
 package org.apache.sshd.common.util.io;
 
 import java.io.IOException;
-import java.nio.channels.Channel;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -29,14 +28,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class CloseableEmptyInputStream extends EmptyInputStream implements Channel {
+public class CloseableEmptyInputStream extends EmptyInputStream {
     private final AtomicBoolean open = new AtomicBoolean(true);
 
     public CloseableEmptyInputStream() {
         super();
     }
 
-    @Override
     public boolean isOpen() {
         return open.get();
     }

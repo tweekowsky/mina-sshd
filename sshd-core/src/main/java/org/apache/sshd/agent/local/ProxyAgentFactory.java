@@ -89,7 +89,6 @@ public class ProxyAgentFactory implements SshAgentFactory {
                 return proxy.getId();
             }
 
-            @Override
             public boolean isOpen() {
                 return open.get() && proxy.isOpen();
             }

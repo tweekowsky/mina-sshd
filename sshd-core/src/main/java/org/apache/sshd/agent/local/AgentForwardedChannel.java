@@ -49,7 +49,6 @@ public class AgentForwardedChannel extends AbstractClientChannel {
         AbstractAgentProxy rtn = new AbstractAgentProxy() {
             private final AtomicBoolean open = new AtomicBoolean(true);
 
-            @Override
             public boolean isOpen() {
                 return open.get();
             }

@@ -18,8 +18,8 @@
  */
 package org.apache.sshd.common.io;
 
+import java.io.Closeable;
 import java.io.IOException;
-import java.nio.channels.Channel;
 
 import org.apache.sshd.common.util.buffer.Buffer;
 
@@ -28,7 +28,7 @@ import org.apache.sshd.common.util.buffer.Buffer;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface PacketWriter extends Channel {
+public interface PacketWriter extends Closeable {
     /**
      * Encode and send the given buffer. <B>Note:</B> for session packets the buffer has to have
      * 5 bytes free at the beginning to allow the encoding to take place. Also, the write position

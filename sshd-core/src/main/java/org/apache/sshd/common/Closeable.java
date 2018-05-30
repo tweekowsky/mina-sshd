@@ -20,7 +20,6 @@ package org.apache.sshd.common;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.nio.channels.Channel;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.sshd.common.future.CloseFuture;
@@ -34,7 +33,7 @@ import org.apache.sshd.common.future.SshFutureListener;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface Closeable extends Channel {
+public interface Closeable extends java.io.Closeable {
 
     /**
      * Timeout (milliseconds) for waiting on a {@link CloseFuture} to successfully
@@ -93,7 +92,6 @@ public interface Closeable extends Channel {
      */
     boolean isClosing();
 
-    @Override
     default boolean isOpen() {
         return !(isClosed() || isClosing());
     }

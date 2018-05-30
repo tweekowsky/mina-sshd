@@ -80,7 +80,7 @@ public class ChannelAgentForwarding extends AbstractServerChannel {
     public void handleEof() throws IOException {
         // Close agent forwarding channel
         try {
-            if ((agent != null) && agent.isOpen()) {
+            if (agent != null) {
                 agent.close();
             }
         } finally {
@@ -94,7 +94,7 @@ public class ChannelAgentForwarding extends AbstractServerChannel {
         // client.  A notification was already sent by our caller, or will
         // be sent after we return.
         try {
-            if ((agent != null) && agent.isOpen()) {
+            if (agent != null) {
                 try {
                     agent.close();
                 } catch (IOException e) {

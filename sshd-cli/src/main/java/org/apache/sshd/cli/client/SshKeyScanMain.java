@@ -22,6 +22,7 @@ package org.apache.sshd.cli.client;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +34,6 @@ import java.io.Writer;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.channels.Channel;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -88,7 +88,7 @@ import org.apache.sshd.common.util.security.SecurityUtils;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class SshKeyScanMain implements Channel, Callable<Void>, ServerKeyVerifier, SessionListener, SimplifiedLog {
+public class SshKeyScanMain implements Closeable, Callable<Void>, ServerKeyVerifier, SessionListener, SimplifiedLog {
     /**
      * Default key types if not overridden from the command line
      */
@@ -576,7 +576,6 @@ public class SshKeyScanMain implements Channel, Callable<Void>, ServerKeyVerifie
         }
     }
 
-    @Override
     public boolean isOpen() {
         return open.get();
     }
