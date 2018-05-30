@@ -18,13 +18,33 @@
  */
 package org.apache.sshd.client.auth;
 
-import org.apache.sshd.common.auth.UserAuthMethodFactory;
+import org.apache.sshd.common.NamedFactory;
 
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
 // CHECKSTYLE:OFF
-public interface UserAuthFactory extends UserAuthMethodFactory<UserAuth> {
-    // nothing extra
+public interface UserAuthFactory extends NamedFactory<UserAuth> {
+
+    /**
+     * Password authentication method name
+     */
+    String PASSWORD = "password";
+
+    /**
+     * Public key authentication method name
+     */
+    String PUBLIC_KEY = "publickey";
+
+    /**
+     * Keyboard interactive authentication method
+     */
+    String KB_INTERACTIVE = "keyboard-interactive";
+
+    /**
+     * Host-based authentication method
+     */
+    String HOST_BASED = "hostbased";
+
 }
 //CHECKSTYLE:ON

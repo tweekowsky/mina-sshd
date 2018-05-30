@@ -26,7 +26,7 @@ import org.apache.sshd.common.FactoryManager;
 import org.apache.sshd.common.NamedFactory;
 import org.apache.sshd.server.command.Command;
 import org.apache.sshd.server.command.CommandFactory;
-import org.apache.sshd.server.session.ServerProxyAcceptorHolder;
+import org.apache.sshd.server.session.ServerProxyAcceptor;
 
 /**
  * The <code>ServerFactoryManager</code> enable the retrieval of additional
@@ -36,7 +36,6 @@ import org.apache.sshd.server.session.ServerProxyAcceptorHolder;
  */
 public interface ServerFactoryManager
         extends FactoryManager,
-                ServerProxyAcceptorHolder,
                 ServerAuthenticationManager {
 
     /**
@@ -111,4 +110,8 @@ public interface ServerFactoryManager
      * or {@code null} if subsystems are not supported on this server
      */
     List<NamedFactory<Command>> getSubsystemFactories();
+
+    ServerProxyAcceptor getServerProxyAcceptor();
+
+    void setServerProxyAcceptor(ServerProxyAcceptor proxyAcceptor);
 }

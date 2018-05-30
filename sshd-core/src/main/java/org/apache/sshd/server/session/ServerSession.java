@@ -31,7 +31,6 @@ import org.apache.sshd.server.ServerFactoryManager;
  */
 public interface ServerSession
         extends Session,
-                ServerProxyAcceptorHolder,
                 ServerAuthenticationManager {
 
     /**

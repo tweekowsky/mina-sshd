@@ -45,7 +45,6 @@ import org.apache.sshd.common.file.util.MockPath;
 import org.apache.sshd.common.scp.ScpTransferEventListener.FileOperation;
 import org.apache.sshd.common.scp.helpers.DefaultScpFileOpener;
 import org.apache.sshd.common.session.Session;
-import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.io.IoUtils;
 import org.apache.sshd.common.util.io.LimitInputStream;
@@ -55,7 +54,7 @@ import org.apache.sshd.common.util.logging.AbstractLoggingBean;
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
 @SuppressWarnings("PMD.AvoidUsingOctalValues")
-public class ScpHelper extends AbstractLoggingBean implements SessionHolder<Session> {
+public class ScpHelper extends AbstractLoggingBean {
     /**
      * Command prefix used to identify SCP commands
      */
@@ -110,7 +109,6 @@ public class ScpHelper extends AbstractLoggingBean implements SessionHolder<Sess
         this.listener = (eventListener == null) ? ScpTransferEventListener.EMPTY : eventListener;
     }
 
-    @Override
     public Session getSession() {
         return sessionInstance;
     }

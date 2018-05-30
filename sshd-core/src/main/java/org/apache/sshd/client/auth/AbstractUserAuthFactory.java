@@ -19,13 +19,27 @@
 
 package org.apache.sshd.client.auth;
 
-import org.apache.sshd.common.auth.AbstractUserAuthMethodFactory;
+import org.apache.sshd.common.util.ValidateUtils;
 
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public abstract class AbstractUserAuthFactory extends AbstractUserAuthMethodFactory<UserAuth> implements UserAuthFactory {
+public abstract class AbstractUserAuthFactory implements UserAuthFactory {
+
+    private final String name;
+
     protected AbstractUserAuthFactory(String name) {
-        super(name);
+        this.name = ValidateUtils.checkNotNullAndNotEmpty(name, "No factory name provided");
     }
+
+    @Override
+    public final String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[" + getName() + "]";
+    }
+
 }

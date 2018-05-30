@@ -56,6 +56,8 @@ public abstract class AbstractScpClient extends AbstractLoggingBean implements S
         super();
     }
 
+    public abstract ClientSession getSession();
+
     @Override
     public boolean isOpen() {
         return getSession().isOpen();

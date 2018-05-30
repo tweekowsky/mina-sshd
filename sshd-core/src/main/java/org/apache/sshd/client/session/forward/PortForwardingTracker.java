@@ -24,13 +24,12 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.net.SshdSocketAddress;
 
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public abstract class PortForwardingTracker implements Closeable, SessionHolder<ClientSession> {
+public abstract class PortForwardingTracker implements Closeable {
     protected final AtomicBoolean open = new AtomicBoolean(true);
     private final ClientSession session;
     private final SshdSocketAddress localAddress;
@@ -54,7 +53,6 @@ public abstract class PortForwardingTracker implements Closeable, SessionHolder<
         return boundAddress;
     }
 
-    @Override
     public ClientSession getSession() {
         return session;
     }

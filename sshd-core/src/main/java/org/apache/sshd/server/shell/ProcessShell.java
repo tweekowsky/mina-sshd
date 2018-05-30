@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.sshd.common.channel.PtyMode;
-import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.ValidateUtils;
 import org.apache.sshd.common.util.io.IoUtils;
@@ -44,7 +43,7 @@ import org.apache.sshd.server.session.ServerSession;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class ProcessShell extends AbstractLoggingBean implements InvertedShell, SessionHolder<ServerSession> {
+public class ProcessShell extends AbstractLoggingBean implements InvertedShell {
     private final List<String> command;
     private String cmdValue;
     private ServerSession session;
@@ -67,7 +66,6 @@ public class ProcessShell extends AbstractLoggingBean implements InvertedShell, 
         this.cmdValue = GenericUtils.join(command, ' ');
     }
 
-    @Override
     public ServerSession getSession() {
         return session;
     }

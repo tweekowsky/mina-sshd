@@ -23,7 +23,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.sshd.common.scp.ScpFileOpener;
-import org.apache.sshd.common.scp.ScpFileOpenerHolder;
 import org.apache.sshd.common.scp.ScpHelper;
 import org.apache.sshd.common.scp.ScpTransferEventListener;
 import org.apache.sshd.common.util.EventListenerUtils;
@@ -44,9 +43,8 @@ import org.apache.sshd.server.command.CommandFactory;
  */
 public class ScpCommandFactory
         extends AbstractDelegatingCommandFactory
-        implements ScpFileOpenerHolder,
-        Cloneable,
-        ExecutorServiceConfigurer {
+        implements Cloneable, ExecutorServiceConfigurer {
+
     public static final String SCP_FACTORY_NAME = "scp";
 
     /**
@@ -118,12 +116,10 @@ public class ScpCommandFactory
         listenerProxy = EventListenerUtils.proxyWrapper(ScpTransferEventListener.class, getClass().getClassLoader(), listeners);
     }
 
-    @Override
     public ScpFileOpener getScpFileOpener() {
         return fileOpener;
     }
 
-    @Override
     public void setScpFileOpener(ScpFileOpener fileOpener) {
         this.fileOpener = fileOpener;
     }

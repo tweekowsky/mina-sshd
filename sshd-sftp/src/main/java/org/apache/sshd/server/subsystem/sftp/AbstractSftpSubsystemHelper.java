@@ -206,6 +206,8 @@ public abstract class AbstractSftpSubsystemHelper
         errorStatusDataHandler = Objects.requireNonNull(handler, "No error status data handler");
     }
 
+    public abstract ServerSession getSession();
+
     @Override
     public UnsupportedAttributePolicy getUnsupportedAttributePolicy() {
         return unsupportedAttributePolicy;

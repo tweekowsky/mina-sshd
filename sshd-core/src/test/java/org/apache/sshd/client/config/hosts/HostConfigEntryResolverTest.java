@@ -132,7 +132,7 @@ public class HostConfigEntryResolverTest extends BaseTestSupport {
 
     @Test
     public void testPreloadedIdentities() throws Exception {
-        KeyPair identity = Utils.getFirstKeyPair(sshd);
+        KeyPair identity = Utils.getFirstKeyPair(sshd.getKeyPairProvider());
         String user = getCurrentTestName();
         // make sure authentication is achieved only via the identity public key
         sshd.setPublickeyAuthenticator((username, key, session) -> {
@@ -184,7 +184,7 @@ public class HostConfigEntryResolverTest extends BaseTestSupport {
         KeyPairProvider clientIdProvider =
                 Utils.createTestHostKeyProvider(clientIdFile.resolve(getCurrentTestName() + ".pem"));
 
-        KeyPair specificIdentity = Utils.getFirstKeyPair(sshd);
+        KeyPair specificIdentity = Utils.getFirstKeyPair(sshd.getKeyPairProvider());
         KeyPair defaultIdentity = Utils.getFirstKeyPair(clientIdProvider);
         ValidateUtils.checkTrue(!KeyUtils.compareKeyPairs(specificIdentity, defaultIdentity),
                 "client identity not different then entry one");

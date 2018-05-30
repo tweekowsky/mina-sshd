@@ -30,7 +30,6 @@ import org.apache.sshd.common.channel.throttle.ChannelStreamPacketWriterResolver
 import org.apache.sshd.common.io.PacketWriter;
 import org.apache.sshd.common.session.ConnectionService;
 import org.apache.sshd.common.session.Session;
-import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.buffer.Buffer;
 
@@ -46,8 +45,7 @@ public interface Channel<S extends Session>
                 AttributeStore,
                 PacketWriter,
                 ChannelStreamPacketWriterResolverManager,
-                Closeable,
-                SessionHolder<S> {
+                Closeable {
 
     // Known types of channels
     String CHANNEL_EXEC = "exec";
@@ -67,6 +65,8 @@ public interface Channel<S extends Session>
     Window getLocalWindow();
 
     Window getRemoteWindow();
+
+    S getSession();
 
     List<RequestHandler<Channel>> getRequestHandlers();
 

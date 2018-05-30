@@ -51,7 +51,6 @@ import org.apache.sshd.common.io.IoServiceFactory;
 import org.apache.sshd.common.io.IoSession;
 import org.apache.sshd.common.session.ConnectionService;
 import org.apache.sshd.common.session.Session;
-import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.EventListenerUtils;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.Invoker;
@@ -70,7 +69,7 @@ import org.apache.sshd.server.forward.TcpForwardingFilter;
  */
 public class DefaultForwardingFilter
         extends AbstractInnerCloseable
-        implements ForwardingFilter, SessionHolder<Session>, PortForwardingEventListenerManager {
+        implements ForwardingFilter, PortForwardingEventListenerManager {
 
     /**
      * Used to configure the timeout (milliseconds) for receiving a response
@@ -129,7 +128,7 @@ public class DefaultForwardingFilter
 
     @Override
     public Collection<PortForwardingEventListenerManager> getRegisteredManagers() {
-        return managersHolder.isEmpty() ? Collections.emptyList() : new ArrayList<>(managersHolder);
+        return managersHolder.isEmpty() ? Collections.emptyList() : Collections.unmodifiableCollection(managersHolder);
     }
 
     @Override
@@ -146,7 +145,6 @@ public class DefaultForwardingFilter
         return managersHolder.remove(manager);
     }
 
-    @Override
     public Session getSession() {
         return sessionInstance;
     }

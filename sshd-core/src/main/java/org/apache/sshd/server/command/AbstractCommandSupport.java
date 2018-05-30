@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.logging.AbstractLoggingBean;
 import org.apache.sshd.common.util.threads.ExecutorServiceCarrier;
@@ -43,8 +42,7 @@ import org.apache.sshd.server.session.ServerSession;
  */
 public abstract class AbstractCommandSupport
         extends AbstractLoggingBean
-        implements Command, Runnable, ExecutorServiceCarrier, SessionAware,
-                    SessionHolder<ServerSession> {
+        implements Command, Runnable, ExecutorServiceCarrier, SessionAware {
     protected final String command;
     protected InputStream in;
     protected OutputStream out;
@@ -75,7 +73,6 @@ public abstract class AbstractCommandSupport
         return command;
     }
 
-    @Override
     public ServerSession getSession() {
         return serverSession;
     }

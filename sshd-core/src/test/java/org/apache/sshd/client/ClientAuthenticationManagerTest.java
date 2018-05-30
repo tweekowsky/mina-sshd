@@ -80,12 +80,10 @@ public class ClientAuthenticationManagerTest extends BaseTestSupport {
                 assertNull("Unexpected multiple invocation", factoriesHolder.getAndSet(userAuthFactories));
             }
 
-            @Override
             public KeyPairProvider getKeyPairProvider() {
                 return null;
             }
 
-            @Override
             public void setKeyPairProvider(KeyPairProvider keyPairProvider) {
                 throw new UnsupportedOperationException("setKeyPairProvider(" + keyPairProvider + ")");
             }

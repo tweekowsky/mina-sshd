@@ -26,14 +26,13 @@ import org.apache.sshd.common.util.buffer.ByteArrayBuffer;
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class SessionWorkBuffer extends ByteArrayBuffer implements SessionHolder<Session> {
+public class SessionWorkBuffer extends ByteArrayBuffer {
     private final Session session;
 
     public SessionWorkBuffer(Session session) {
         this.session = Objects.requireNonNull(session, "No session");
     }
 
-    @Override
     public Session getSession() {
         return session;
     }

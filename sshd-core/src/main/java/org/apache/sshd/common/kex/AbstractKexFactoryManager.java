@@ -37,6 +37,7 @@ import org.apache.sshd.common.util.closeable.AbstractInnerCloseable;
 public abstract class AbstractKexFactoryManager
               extends AbstractInnerCloseable
               implements KexFactoryManager {
+
     private KexFactoryManager parent;
     private List<NamedFactory<KeyExchange>> keyExchangeFactories;
     private List<NamedFactory<Cipher>> cipherFactories;

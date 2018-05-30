@@ -58,7 +58,6 @@ import org.apache.sshd.common.config.keys.KeyUtils;
 import org.apache.sshd.common.keyprovider.FileKeyPairProvider;
 import org.apache.sshd.common.keyprovider.KeyIdentityProvider;
 import org.apache.sshd.common.keyprovider.KeyPairProvider;
-import org.apache.sshd.common.keyprovider.KeyPairProviderHolder;
 import org.apache.sshd.common.random.Random;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.ValidateUtils;
@@ -146,10 +145,6 @@ public final class Utils {
         keyProvider.setPath(Objects.requireNonNull(path, "No path"));
         keyProvider.setAlgorithm(DEFAULT_TEST_HOST_KEY_PROVIDER_ALGORITHM);
         return validateKeyPairProvider(keyProvider);
-    }
-
-    public static KeyPair getFirstKeyPair(KeyPairProviderHolder holder) {
-        return getFirstKeyPair(Objects.requireNonNull(holder, "No holder").getKeyPairProvider());
     }
 
     public static KeyPair getFirstKeyPair(KeyIdentityProvider provider) {

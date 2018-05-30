@@ -81,12 +81,10 @@ public abstract class AbstractServerSession extends AbstractSession implements S
         return (ServerFactoryManager) super.getFactoryManager();
     }
 
-    @Override
     public ServerProxyAcceptor getServerProxyAcceptor() {
         return resolveEffectiveProvider(ServerProxyAcceptor.class, proxyAcceptor, getFactoryManager().getServerProxyAcceptor());
     }
 
-    @Override
     public void setServerProxyAcceptor(ServerProxyAcceptor proxyAcceptor) {
         this.proxyAcceptor = proxyAcceptor;
     }

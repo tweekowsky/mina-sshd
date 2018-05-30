@@ -47,7 +47,6 @@ import org.apache.sshd.common.SshException;
 import org.apache.sshd.common.config.keys.KeyRandomArt;
 import org.apache.sshd.common.io.IoWriteFuture;
 import org.apache.sshd.common.session.Session;
-import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.NumberUtils;
 import org.apache.sshd.common.util.ValidateUtils;
@@ -64,7 +63,7 @@ import org.apache.sshd.server.auth.WelcomeBannerPhase;
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class ServerUserAuthService extends AbstractCloseable implements Service, SessionHolder<ServerSession> {
+public class ServerUserAuthService extends AbstractCloseable implements Service {
 
     private final AbstractServerSession serverSession;
     private final AtomicBoolean welcomeSent = new AtomicBoolean(false);
