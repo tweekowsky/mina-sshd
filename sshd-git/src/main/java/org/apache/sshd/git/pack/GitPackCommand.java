@@ -95,7 +95,7 @@ public class GitPackCommand extends AbstractGitCommand {
 
     protected Path resolveRootDirectory(String command, String[] args) throws IOException {
         GitLocationResolver resolver = getGitLocationResolver();
-        Path rootDir = resolver.resolveRootDirectory(command, args, getServerSession(), getFileSystem());
+        Path rootDir = resolver.resolveRootDirectory(command, args, this.getSession(), getFileSystem());
         ValidateUtils.checkState(rootDir != null, "No root directory provided for %s command", command);
 
         String pathArg = args[1];

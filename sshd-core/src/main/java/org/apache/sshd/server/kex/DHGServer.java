@@ -86,7 +86,7 @@ public class DHGServer extends AbstractDHServerKeyExchange {
 
     @Override
     public boolean next(int cmd, Buffer buffer) throws Exception {
-        ServerSession session = getServerSession();
+        ServerSession session = this.getSession();
         if (log.isDebugEnabled()) {
             log.debug("next({})[{}] process command={}", this, session, KeyExchange.getSimpleKexOpcodeName(cmd));
         }

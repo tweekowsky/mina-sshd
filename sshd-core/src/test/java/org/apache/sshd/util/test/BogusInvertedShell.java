@@ -24,13 +24,13 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.io.IoUtils;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.session.ServerSession;
-import org.apache.sshd.server.session.ServerSessionHolder;
 import org.apache.sshd.server.shell.InvertedShell;
 
-public class BogusInvertedShell implements InvertedShell, ServerSessionHolder {
+public class BogusInvertedShell implements InvertedShell, SessionHolder<ServerSession> {
 
     private final OutputStream in;
     private final InputStream out;
@@ -49,7 +49,7 @@ public class BogusInvertedShell implements InvertedShell, ServerSessionHolder {
     }
 
     @Override
-    public ServerSession getServerSession() {
+    public ServerSession getSession() {
         return session;
     }
 

@@ -69,7 +69,7 @@ public class SimpleSftpClientTest extends BaseSimpleClientTestSupport {
         try (SftpClient sftp = login()) {
             assertTrue("SFTP not open", sftp.isOpen());
 
-            Session session = sftp.getClientSession();
+            Session session = sftp.getSession();
             assertTrue("Session not open", session.isOpen());
 
             sftp.close();

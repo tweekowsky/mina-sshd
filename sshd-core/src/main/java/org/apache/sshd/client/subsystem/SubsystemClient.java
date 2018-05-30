@@ -23,7 +23,6 @@ import java.io.Closeable;
 
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.client.session.ClientSessionHolder;
 import org.apache.sshd.common.NamedResource;
 import org.apache.sshd.common.channel.ChannelHolder;
 import org.apache.sshd.common.session.SessionHolder;
@@ -33,7 +32,6 @@ import org.apache.sshd.common.session.SessionHolder;
  */
 public interface SubsystemClient
         extends SessionHolder<ClientSession>,
-                ClientSessionHolder,
                 NamedResource,
                 ChannelHolder,
                 Closeable {

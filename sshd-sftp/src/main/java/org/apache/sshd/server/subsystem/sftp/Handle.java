@@ -41,13 +41,13 @@ public abstract class Handle implements java.nio.channels.Channel {
 
     protected void signalHandleOpening(SftpSubsystem subsystem) throws IOException {
         SftpEventListener listener = subsystem.getSftpEventListenerProxy();
-        ServerSession session = subsystem.getServerSession();
+        ServerSession session = subsystem.getSession();
         listener.opening(session, handle, this);
     }
 
     protected void signalHandleOpen(SftpSubsystem subsystem) throws IOException {
         SftpEventListener listener = subsystem.getSftpEventListenerProxy();
-        ServerSession session = subsystem.getServerSession();
+        ServerSession session = subsystem.getSession();
         listener.open(session, handle, this);
     }
 

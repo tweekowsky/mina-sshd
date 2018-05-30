@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import org.apache.sshd.common.session.Session;
 import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.logging.AbstractLoggingBean;
@@ -36,7 +35,6 @@ import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.SessionAware;
 import org.apache.sshd.server.session.ServerSession;
-import org.apache.sshd.server.session.ServerSessionHolder;
 
 /**
  * Provides a basic useful skeleton for {@link Command} executions
@@ -46,7 +44,7 @@ import org.apache.sshd.server.session.ServerSessionHolder;
 public abstract class AbstractCommandSupport
         extends AbstractLoggingBean
         implements Command, Runnable, ExecutorServiceCarrier, SessionAware,
-                    SessionHolder<Session>, ServerSessionHolder {
+                    SessionHolder<ServerSession> {
     protected final String command;
     protected InputStream in;
     protected OutputStream out;
@@ -78,12 +76,7 @@ public abstract class AbstractCommandSupport
     }
 
     @Override
-    public Session getSession() {
-        return getServerSession();
-    }
-
-    @Override
-    public ServerSession getServerSession() {
+    public ServerSession getSession() {
         return serverSession;
     }
 

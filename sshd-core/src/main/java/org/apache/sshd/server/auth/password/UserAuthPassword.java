@@ -45,9 +45,9 @@ public class UserAuthPassword extends AbstractUserAuth {
         boolean newPassword = buffer.getBoolean();
         String password = buffer.getString();
         if (newPassword) {
-            return handleClientPasswordChangeRequest(buffer, getServerSession(), getUsername(), password, buffer.getString());
+            return handleClientPasswordChangeRequest(buffer, this.getSession(), getUsername(), password, buffer.getString());
         } else {
-            return checkPassword(buffer, getServerSession(), getUsername(), password);
+            return checkPassword(buffer, this.getSession(), getUsername(), password);
         }
     }
 

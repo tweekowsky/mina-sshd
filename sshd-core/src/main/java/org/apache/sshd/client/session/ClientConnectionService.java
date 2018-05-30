@@ -30,6 +30,7 @@ import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;
 import org.apache.sshd.common.io.AbstractIoWriteFuture;
 import org.apache.sshd.common.io.IoWriteFuture;
+import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.session.helpers.AbstractConnectionService;
 import org.apache.sshd.common.util.buffer.Buffer;
 import org.apache.sshd.server.x11.X11ForwardSupport;
@@ -39,7 +40,7 @@ import org.apache.sshd.server.x11.X11ForwardSupport;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class ClientConnectionService extends AbstractConnectionService<AbstractClientSession> implements ClientSessionHolder {
+public class ClientConnectionService extends AbstractConnectionService<AbstractClientSession> implements SessionHolder<ClientSession> {
 
     private ScheduledFuture<?> heartBeat;
 
@@ -48,13 +49,8 @@ public class ClientConnectionService extends AbstractConnectionService<AbstractC
     }
 
     @Override
-    public final ClientSession getClientSession() {
-        return getSession();
-    }
-
-    @Override
     public void start() {
-        ClientSession session = getClientSession();
+        ClientSession session = this.getSession();
         if (!session.isAuthenticated()) {
             throw new IllegalStateException("Session is not authenticated");
         }
@@ -69,7 +65,7 @@ public class ClientConnectionService extends AbstractConnectionService<AbstractC
 
     protected synchronized void startHeartBeat() {
         stopHeartBeat();
-        ClientSession session = getClientSession();
+        ClientSession session = this.getSession();
         long interval = session.getLongProperty(ClientFactoryManager.HEARTBEAT_INTERVAL, ClientFactoryManager.DEFAULT_HEARTBEAT_INTERVAL);
         if (interval > 0L) {
             FactoryManager manager = session.getFactoryManager();
@@ -94,7 +90,7 @@ public class ClientConnectionService extends AbstractConnectionService<AbstractC
      * message write completion
      */
     protected IoWriteFuture sendHeartBeat() {
-        ClientSession session = getClientSession();
+        ClientSession session = this.getSession();
         String request = session.getStringProperty(ClientFactoryManager.HEARTBEAT_REQUEST, ClientFactoryManager.DEFAULT_KEEP_ALIVE_HEARTBEAT_STRING);
         try {
             Buffer buf = session.createBuffer(SshConstants.SSH_MSG_GLOBAL_REQUEST, request.length() + Byte.SIZE);

@@ -33,6 +33,7 @@ import org.apache.sshd.client.channel.exit.ExitSignalChannelRequestHandler;
 import org.apache.sshd.client.channel.exit.ExitStatusChannelRequestHandler;
 import org.apache.sshd.client.future.DefaultOpenFuture;
 import org.apache.sshd.client.future.OpenFuture;
+import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.Closeable;
 import org.apache.sshd.common.FactoryManager;
 import org.apache.sshd.common.SshConstants;
@@ -59,7 +60,7 @@ import org.apache.sshd.common.util.io.IoUtils;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public abstract class AbstractClientChannel extends AbstractChannel implements ClientChannel {
+public abstract class AbstractClientChannel extends AbstractChannel<ClientSession> implements ClientChannel {
 
     protected final AtomicBoolean opened = new AtomicBoolean();
 

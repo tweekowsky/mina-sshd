@@ -44,7 +44,7 @@ public class UserAuthKeyboardInteractive extends AbstractUserAuth {
 
     @Override
     protected Boolean doAuth(Buffer buffer, boolean init) throws Exception {
-        ServerSession session = getServerSession();
+        ServerSession session = this.getSession();
         String username = getUsername();
         KeyboardInteractiveAuthenticator auth = session.getKeyboardInteractiveAuthenticator();
         if (init) {

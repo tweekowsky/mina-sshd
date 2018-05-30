@@ -51,7 +51,7 @@ public class ExplicitPortForwardingTracker extends PortForwardingTracker {
     @Override
     public void close() throws IOException {
         if (open.getAndSet(false)) {
-            PortForwardingManager manager = getClientSession();
+            PortForwardingManager manager = getSession();
             if (isLocalForwarding()) {
                 manager.stopLocalPortForwarding(getLocalAddress());
             } else {

@@ -23,7 +23,7 @@ import java.util.Objects;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.client.session.ClientSessionHolder;
+import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.GenericUtils;
 import org.eclipse.jgit.errors.TransportException;
 import org.eclipse.jgit.transport.CredentialsProvider;
@@ -37,7 +37,7 @@ import org.eclipse.jgit.util.FS;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class GitSshdSessionFactory extends SshSessionFactory implements ClientSessionHolder {
+public class GitSshdSessionFactory extends SshSessionFactory implements SessionHolder<ClientSession> {
     public static final GitSshdSessionFactory INSTANCE = new GitSshdSessionFactory();
 
     private final SshClient client;
@@ -92,7 +92,7 @@ public class GitSshdSessionFactory extends SshSessionFactory implements ClientSe
                 protected ClientSession createClientSession(
                         SshClient clientInstance, String host, String username, int port, String... passwords)
                             throws IOException, InterruptedException {
-                    ClientSession thisSession = getClientSession();
+                    ClientSession thisSession = getSession();
                     if (thisSession != null) {
                         return thisSession;
                     }
@@ -102,7 +102,7 @@ public class GitSshdSessionFactory extends SshSessionFactory implements ClientSe
 
                 @Override
                 protected void disconnectSession(ClientSession sessionInstance) {
-                    ClientSession thisSession = getClientSession();
+                    ClientSession thisSession = getSession();
                     if (GenericUtils.isSameReference(thisSession, sessionInstance)) {
                         return; // do not use the session instance we were given
                     }
@@ -130,7 +130,7 @@ public class GitSshdSessionFactory extends SshSessionFactory implements ClientSe
     }
 
     @Override
-    public ClientSession getClientSession() {
+    public ClientSession getSession() {
         return session;
     }
 }

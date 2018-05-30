@@ -140,7 +140,7 @@ public class SftpFileSystemTest extends BaseTestSupport {
             try (SftpClient sftpClient = fs.getClient()) {
                 assertEquals("Mismatched negotiated version", expectedVersion, sftpClient.getVersion());
 
-                Session session = sftpClient.getClientSession();
+                Session session = sftpClient.getSession();
                 params.forEach((key, expected) -> {
                     if (SftpFileSystemProvider.VERSION_PARAM.equalsIgnoreCase(key)) {
                         return;

@@ -42,7 +42,7 @@ public class DirectoryHandle extends Handle implements Iterator<Path> {
         signalHandleOpening(subsystem);
 
         SftpFileSystemAccessor accessor = subsystem.getFileSystemAccessor();
-        ServerSession session = subsystem.getServerSession();
+        ServerSession session = subsystem.getSession();
         ds = accessor.openDirectory(session, subsystem, dir, handle);
 
         Path parent = dir.getParent();

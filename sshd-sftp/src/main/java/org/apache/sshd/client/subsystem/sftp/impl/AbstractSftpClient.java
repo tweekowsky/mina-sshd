@@ -676,7 +676,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
 
         CloseableHandle handle = new DefaultCloseableHandle(this, path, checkHandle(SftpConstants.SSH_FXP_OPEN, buffer));
         if (log.isTraceEnabled()) {
-            log.trace("open({})[{}] options={}: {}", getClientSession(), path, options, handle);
+            log.trace("open({})[{}] options={}: {}", getSession(), path, options, handle);
         }
         return handle;
     }
@@ -688,7 +688,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
         }
 
         if (log.isTraceEnabled()) {
-            log.trace("close({}) {}", getClientSession(), handle);
+            log.trace("close({}) {}", getSession(), handle);
         }
 
         byte[] id = Objects.requireNonNull(handle, "No handle").getIdentifier();
@@ -704,7 +704,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("remove({}) {}", getClientSession(), path);
+            log.debug("remove({}) {}", getSession(), path);
         }
 
         Buffer buffer = new ByteArrayBuffer(path.length() + Long.SIZE /* some extra fields */, false);
@@ -719,7 +719,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("rename({}) {} => {}", getClientSession(), oldPath, newPath);
+            log.debug("rename({}) {} => {}", getSession(), oldPath, newPath);
         }
 
         Buffer buffer = new ByteArrayBuffer(oldPath.length() + newPath.length() + Long.SIZE /* some extra fields */, false);
@@ -868,7 +868,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("mkdir({}) {}", getClientSession(), path);
+            log.debug("mkdir({}) {}", getSession(), path);
         }
 
         Buffer buffer = new ByteArrayBuffer(path.length() + Long.SIZE /* some extra fields */, false);
@@ -890,7 +890,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("rmdir({}) {}", getClientSession(), path);
+            log.debug("rmdir({}) {}", getSession(), path);
         }
 
         Buffer buffer = new ByteArrayBuffer(path.length() + Long.SIZE /* some extra fields */, false);
@@ -909,7 +909,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
 
         CloseableHandle handle = new DefaultCloseableHandle(this, path, checkHandle(SftpConstants.SSH_FXP_OPENDIR, buffer));
         if (log.isTraceEnabled()) {
-            log.trace("openDir({})[{}}: {}", getClientSession(), path, handle);
+            log.trace("openDir({})[{}}: {}", getSession(), path, handle);
         }
 
         return handle;
@@ -1083,7 +1083,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("setStat({})[{}]: {}", getClientSession(), path, attributes);
+            log.debug("setStat({})[{}]: {}", getSession(), path, attributes);
         }
 
         Buffer buffer = new ByteArrayBuffer();
@@ -1099,7 +1099,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("setStat({})[{}]: {}", getClientSession(), handle, attributes);
+            log.debug("setStat({})[{}]: {}", getSession(), handle, attributes);
         }
         byte[] id = Objects.requireNonNull(handle, "No handle").getIdentifier();
         Buffer buffer = new ByteArrayBuffer(id.length + (2 * Long.SIZE) /* some extras */, false);
@@ -1126,7 +1126,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("link({})[symbolic={}] {} => {}", getClientSession(), symbolic, linkPath, targetPath);
+            log.debug("link({})[symbolic={}] {} => {}", getSession(), symbolic, linkPath, targetPath);
         }
 
         Buffer buffer = new ByteArrayBuffer(linkPath.length() + targetPath.length() + Long.SIZE /* some extra fields */, false);
@@ -1156,7 +1156,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
 
         if (log.isDebugEnabled()) {
             log.debug("lock({})[{}] offset={}, length={}, mask=0x{}",
-                      getClientSession(), handle, offset, length, Integer.toHexString(mask));
+                      getSession(), handle, offset, length, Integer.toHexString(mask));
         }
 
         byte[] id = Objects.requireNonNull(handle, "No handle").getIdentifier();
@@ -1175,7 +1175,7 @@ public abstract class AbstractSftpClient extends AbstractSubsystemClient impleme
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("unlock({})[{}] offset={}, length={}", getClientSession(), handle, offset, length);
+            log.debug("unlock({})[{}] offset={}, length={}", getSession(), handle, offset, length);
         }
 
         byte[] id = Objects.requireNonNull(handle, "No handle").getIdentifier();

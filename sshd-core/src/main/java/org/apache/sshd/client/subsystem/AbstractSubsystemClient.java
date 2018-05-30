@@ -32,7 +32,7 @@ public abstract class AbstractSubsystemClient extends AbstractLoggingBean implem
 
     @Override
     public final ClientSession getSession() {
-        return getClientSession();
+        return getSession();
     }
 
     @Override

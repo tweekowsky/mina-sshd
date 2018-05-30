@@ -19,15 +19,15 @@
 package org.apache.sshd.client.auth;
 
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.client.session.ClientSessionHolder;
 import org.apache.sshd.common.auth.UserAuthInstance;
+import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.buffer.Buffer;
 
 /**
  * Represents a user authentication mechanism
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface UserAuth extends ClientSessionHolder, UserAuthInstance<ClientSession> {
+public interface UserAuth extends SessionHolder<ClientSession>, UserAuthInstance<ClientSession> {
 
     /**
      * @param session The {@link ClientSession}

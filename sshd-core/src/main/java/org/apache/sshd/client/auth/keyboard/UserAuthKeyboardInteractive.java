@@ -244,7 +244,7 @@ public class UserAuthKeyboardInteractive extends AbstractUserAuth {
      * a warning...)
      */
     protected String[] getUserResponses(String name, String instruction, String lang, String[] prompt, boolean[] echo) {
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         int num = GenericUtils.length(prompt);
         if (num == 0) {
             if (log.isDebugEnabled()) {

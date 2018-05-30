@@ -476,7 +476,7 @@ public class ChannelSession extends AbstractServerChannel {
             return RequestHandler.Result.ReplyFailure;
         }
 
-        ServerFactoryManager manager = Objects.requireNonNull(getServerSession(), "No server session").getFactoryManager();
+        ServerFactoryManager manager = Objects.requireNonNull(this.getSession(), "No server session").getFactoryManager();
         Factory<Command> factory = Objects.requireNonNull(manager, "No server factory manager").getShellFactory();
         if (factory == null) {
             if (log.isDebugEnabled()) {
@@ -513,7 +513,7 @@ public class ChannelSession extends AbstractServerChannel {
         }
 
         String commandLine = buffer.getString();
-        ServerFactoryManager manager = Objects.requireNonNull(getServerSession(), "No server session").getFactoryManager();
+        ServerFactoryManager manager = Objects.requireNonNull(this.getSession(), "No server session").getFactoryManager();
         CommandFactory factory = Objects.requireNonNull(manager, "No server factory manager").getCommandFactory();
         if (factory == null) {
             log.warn("handleExec({}) No command factory for command: {}", this, commandLine);
@@ -552,7 +552,7 @@ public class ChannelSession extends AbstractServerChannel {
                       this, wantReply, subsystem);
         }
 
-        ServerFactoryManager manager = Objects.requireNonNull(getServerSession(), "No server session").getFactoryManager();
+        ServerFactoryManager manager = Objects.requireNonNull(this.getSession(), "No server session").getFactoryManager();
         List<NamedFactory<Command>> factories = Objects.requireNonNull(manager, "No server factory manager").getSubsystemFactories();
         if (GenericUtils.isEmpty(factories)) {
             log.warn("handleSubsystem({}) No factories for subsystem: {}", this, subsystem);
@@ -703,7 +703,7 @@ public class ChannelSession extends AbstractServerChannel {
     }
 
     protected RequestHandler.Result handleAgentForwarding(String requestType, Buffer buffer, boolean wantReply) throws IOException {
-        ServerSession session = getServerSession();
+        ServerSession session = this.getSession();
         PropertyResolverUtils.updateProperty(session, FactoryManager.AGENT_FORWARDING_TYPE, requestType);
         FactoryManager manager = Objects.requireNonNull(session.getFactoryManager(), "No session factory manager");
         AgentForwardingFilter filter = manager.getAgentForwardingFilter();
@@ -739,7 +739,7 @@ public class ChannelSession extends AbstractServerChannel {
     }
 
     protected RequestHandler.Result handleX11Forwarding(String requestType, Buffer buffer, boolean wantReply) throws IOException {
-        ServerSession session = getServerSession();
+        ServerSession session = this.getSession();
         boolean singleConnection = buffer.getBoolean();
         String authProtocol = buffer.getString();
         String authCookie = buffer.getString();

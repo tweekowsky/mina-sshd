@@ -51,7 +51,7 @@ import org.apache.sshd.common.util.closeable.AbstractCloseable;
  */
 public class ClientUserAuthService
         extends AbstractCloseable
-        implements Service, SessionHolder<ClientSession>, ClientSessionHolder {
+        implements Service, SessionHolder<ClientSession> {
 
     /**
      * The AuthFuture that is being used by the current auth request.  This encodes the state.
@@ -104,11 +104,6 @@ public class ClientUserAuthService
 
     @Override
     public ClientSession getSession() {
-        return getClientSession();
-    }
-
-    @Override
-    public ClientSession getClientSession() {
         return clientSession;
     }
 
@@ -120,7 +115,7 @@ public class ClientUserAuthService
     public AuthFuture auth(String service) throws IOException {
         this.service = ValidateUtils.checkNotNullAndNotEmpty(service, "No service name");
 
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         // check if any previous future in use
         AuthFuture authFuture = new DefaultAuthFuture(service, clientSession.getLock());
         AuthFuture currentFuture = authFutureHolder.getAndSet(authFuture);
@@ -162,7 +157,7 @@ public class ClientUserAuthService
 
     @Override
     public void process(int cmd, Buffer buffer) throws Exception {
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         AuthFuture authFuture = authFutureHolder.get();
         boolean debugEnabled = log.isDebugEnabled();
         if ((authFuture != null) && authFuture.isSuccess()) {
@@ -210,7 +205,7 @@ public class ClientUserAuthService
      */
     protected void processUserAuth(Buffer buffer) throws Exception {
         int cmd = buffer.getUByte();
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         if (cmd == SshConstants.SSH_MSG_USERAUTH_SUCCESS) {
             if (log.isDebugEnabled()) {
                 log.debug("processUserAuth({}) SSH_MSG_USERAUTH_SUCCESS Succeeded with {}",
@@ -271,7 +266,7 @@ public class ClientUserAuthService
     }
 
     protected void tryNext(int cmd) throws Exception {
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         boolean debugEnabled = log.isDebugEnabled();
         // Loop until we find something to try
         while (true) {

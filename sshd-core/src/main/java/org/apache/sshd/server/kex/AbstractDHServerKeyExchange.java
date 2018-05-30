@@ -26,19 +26,13 @@ import org.apache.sshd.common.kex.dh.AbstractDHKeyExchange;
 import org.apache.sshd.common.session.Session;
 import org.apache.sshd.common.util.ValidateUtils;
 import org.apache.sshd.server.session.ServerSession;
-import org.apache.sshd.server.session.ServerSessionHolder;
 
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public abstract class AbstractDHServerKeyExchange extends AbstractDHKeyExchange implements ServerSessionHolder {
+public abstract class AbstractDHServerKeyExchange extends AbstractDHKeyExchange<ServerSession> {
     protected AbstractDHServerKeyExchange() {
         super();
-    }
-
-    @Override
-    public final ServerSession getServerSession() {
-        return (ServerSession) getSession();
     }
 
     @Override
@@ -49,7 +43,7 @@ public abstract class AbstractDHServerKeyExchange extends AbstractDHKeyExchange 
 
     @Override
     public PublicKey getServerKey() {
-        ServerSession session = getServerSession();
+        ServerSession session = this.getSession();
         return Objects.requireNonNull(session.getHostKey(), "No server key pair available").getPublic();
     }
 }

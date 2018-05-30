@@ -41,14 +41,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.client.session.ClientSessionHolder;
+import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.client.subsystem.sftp.impl.AbstractSftpClient;
 import org.apache.sshd.common.file.util.BaseFileSystem;
 import org.apache.sshd.common.subsystem.sftp.SftpConstants;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.buffer.Buffer;
 
-public class SftpFileSystem extends BaseFileSystem<SftpPath> implements ClientSessionHolder {
+public class SftpFileSystem extends BaseFileSystem<SftpPath> implements SessionHolder<ClientSession> {
     public static final String POOL_SIZE_PROP = "sftp-fs-pool-size";
     public static final int DEFAULT_POOL_SIZE = 8;
 
@@ -145,7 +145,7 @@ public class SftpFileSystem extends BaseFileSystem<SftpPath> implements ClientSe
     }
 
     @Override
-    public ClientSession getClientSession() {
+    public ClientSession getSession() {
         return clientSession;
     }
 
@@ -156,7 +156,7 @@ public class SftpFileSystem extends BaseFileSystem<SftpPath> implements ClientSe
             while (wrapper == null) {
                 SftpClient client = pool.poll();
                 if (client == null) {
-                    ClientSession session = getClientSession();
+                    ClientSession session = getSession();
                     client = factory.createSftpClient(session, getSftpVersionSelector());
                 }
                 if (!client.isClosing()) {
@@ -176,7 +176,7 @@ public class SftpFileSystem extends BaseFileSystem<SftpPath> implements ClientSe
             SftpFileSystemProvider provider = provider();
             String fsId = getId();
             SftpFileSystem fs = provider.removeFileSystem(fsId);
-            ClientSession session = getClientSession();
+            ClientSession session = getSession();
             session.close(true);
 
             if ((fs != null) && (fs != this)) {
@@ -187,7 +187,7 @@ public class SftpFileSystem extends BaseFileSystem<SftpPath> implements ClientSe
 
     @Override
     public boolean isOpen() {
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         return session.isOpen();
     }
 
@@ -208,7 +208,7 @@ public class SftpFileSystem extends BaseFileSystem<SftpPath> implements ClientSe
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[" + getClientSession() + "]";
+        return getClass().getSimpleName() + "[" + getSession() + "]";
     }
 
     private final class Wrapper extends AbstractSftpClient {
@@ -229,8 +229,8 @@ public class SftpFileSystem extends BaseFileSystem<SftpPath> implements ClientSe
         }
 
         @Override
-        public ClientSession getClientSession() {
-            return delegate.getClientSession();
+        public ClientSession getSession() {
+            return delegate.getSession();
         }
 
         @Override

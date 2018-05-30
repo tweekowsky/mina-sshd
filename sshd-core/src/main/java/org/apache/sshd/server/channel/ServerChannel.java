@@ -20,11 +20,11 @@
 package org.apache.sshd.server.channel;
 
 import org.apache.sshd.common.channel.Channel;
-import org.apache.sshd.server.session.ServerSessionHolder;
+import org.apache.sshd.server.session.ServerSession;
 
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface ServerChannel extends Channel, ServerSessionHolder {
+public interface ServerChannel extends Channel<ServerSession> {
     // Marker interface
 }

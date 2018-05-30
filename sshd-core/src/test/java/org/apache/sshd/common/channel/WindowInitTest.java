@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.sshd.client.future.OpenFuture;
 import org.apache.sshd.common.FactoryManager;
 import org.apache.sshd.common.PropertyResolver;
+import org.apache.sshd.common.session.Session;
 import org.apache.sshd.common.util.buffer.Buffer;
 import org.apache.sshd.common.util.buffer.BufferUtils;
 import org.apache.sshd.util.test.BaseTestSupport;
@@ -47,7 +48,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 @UseParametersRunnerFactory(JUnit4ClassRunnerWithParametersFactory.class)
 @Category({ NoIoTestCase.class })
 public class WindowInitTest extends BaseTestSupport {
-    private static final AbstractChannel MOCK_CHANNEL = new AbstractChannel(true) {
+    private static final AbstractChannel<Session> MOCK_CHANNEL = new AbstractChannel<Session>(true) {
         @Override
         public OpenFuture open(int recipient, long rwSize, long packetSize, Buffer buffer) {
             return null;

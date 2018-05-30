@@ -283,7 +283,7 @@ public class SftpRemotePathChannel extends FileChannel {
         }
         ensureOpen(WRITE_MODES);
 
-        int copySize = sftp.getClientSession().getIntProperty(COPY_BUFSIZE_PROP, DEFAULT_TRANSFER_BUFFER_SIZE);
+        int copySize = sftp.getSession().getIntProperty(COPY_BUFSIZE_PROP, DEFAULT_TRANSFER_BUFFER_SIZE);
         boolean completed = false;
         long curPos = (position >= 0L) ? position : posTracker.get();
         long totalRead = 0L;

@@ -30,6 +30,7 @@ import org.apache.sshd.common.channel.throttle.ChannelStreamPacketWriterResolver
 import org.apache.sshd.common.io.PacketWriter;
 import org.apache.sshd.common.session.ConnectionService;
 import org.apache.sshd.common.session.Session;
+import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.buffer.Buffer;
 
@@ -39,13 +40,15 @@ import org.apache.sshd.common.util.buffer.Buffer;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface Channel
+public interface Channel<S extends Session>
         extends ChannelListenerManager,
                 PropertyResolver,
                 AttributeStore,
                 PacketWriter,
                 ChannelStreamPacketWriterResolverManager,
-                Closeable {
+                Closeable,
+                SessionHolder<S> {
+
     // Known types of channels
     String CHANNEL_EXEC = "exec";
     String CHANNEL_SHELL = "shell";
@@ -60,11 +63,6 @@ public interface Channel
      * @return Remote channel identifier
      */
     int getRecipient();
-
-    /**
-     * @return The channel's underlying {@link Session}
-     */
-    Session getSession();
 
     Window getLocalWindow();
 
@@ -156,7 +154,7 @@ public interface Channel
      * @param id The locally assigned channel identifier
      * @throws IOException If failed to process the initialization
      */
-    void init(ConnectionService service, Session session, int id) throws IOException;
+    void init(ConnectionService service, S session, int id) throws IOException;
 
     /**
      * @return {@code true} if call to {@link #init(ConnectionService, Session, int)} was

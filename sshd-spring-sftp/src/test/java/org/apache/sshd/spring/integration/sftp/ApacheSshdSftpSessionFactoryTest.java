@@ -159,14 +159,14 @@ public class ApacheSshdSftpSessionFactoryTest extends BaseTestSupport {
         ClientSession sessionInstance;
         try (Session<SftpClient.DirEntry> sshdSession = sshdFactory.getSession()) {
             SftpClient client = (SftpClient) sshdSession.getClientInstance();
-            sessionInstance = client.getClientSession();
+            sessionInstance = client.getSession();
             assertSame("Mismatched factory session instance", sshdFactory.getSharedClientSession(), sessionInstance);
         }
 
         for (int index = 1; index <= Byte.SIZE; index++) {
             try (Session<SftpClient.DirEntry> sshdSession = sshdFactory.getSession()) {
                 SftpClient client = (SftpClient) sshdSession.getClientInstance();
-                assertSame("Mismatched session #" + index + " session instance", sessionInstance, client.getClientSession());
+                assertSame("Mismatched session #" + index + " session instance", sessionInstance, client.getSession());
             }
         }
     }

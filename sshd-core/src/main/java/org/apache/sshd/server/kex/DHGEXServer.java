@@ -102,7 +102,7 @@ public class DHGEXServer extends AbstractDHServerKeyExchange {
 
     @Override
     public boolean next(int cmd, Buffer buffer) throws Exception {
-        ServerSession session = getServerSession();
+        ServerSession session = this.getSession();
         boolean debugEnabled = log.isDebugEnabled();
         if (debugEnabled) {
             log.debug("next({})[{}] process command={}", this, session, KeyExchange.getGroupKexOpcodeName(cmd));
@@ -270,7 +270,7 @@ public class DHGEXServer extends AbstractDHServerKeyExchange {
             }
         }
 
-        ServerSession session = getServerSession();
+        ServerSession session = this.getSession();
         if (selected.isEmpty()) {
             log.warn("chooseDH({})[{}] No suitable primes found, defaulting to DHG1", this, session);
             return getDH(new BigInteger(DHGroupData.getP1()), new BigInteger(DHGroupData.getG()));
@@ -285,7 +285,7 @@ public class DHGEXServer extends AbstractDHServerKeyExchange {
     }
 
     protected List<Moduli.DhGroup> loadModuliGroups() throws IOException {
-        ServerSession session = getServerSession();
+        ServerSession session = this.getSession();
         String moduliStr = session.getString(ServerFactoryManager.MODULI_URL);
 
         List<Moduli.DhGroup> groups = null;

@@ -39,13 +39,8 @@ public abstract class AbstractUserAuth extends AbstractLoggingBean implements Us
     }
 
     @Override
-    public ClientSession getClientSession() {
-        return clientSession;
-    }
-
-    @Override
     public ClientSession getSession() {
-        return getClientSession();
+        return clientSession;
     }
 
     @Override
@@ -65,7 +60,7 @@ public abstract class AbstractUserAuth extends AbstractLoggingBean implements Us
 
     @Override
     public boolean process(Buffer buffer) throws Exception {
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         String service = getService();
         if (buffer == null) {
             return sendAuthDataRequest(session, service);
@@ -81,7 +76,7 @@ public abstract class AbstractUserAuth extends AbstractLoggingBean implements Us
     @Override
     public void destroy() {
         if (log.isDebugEnabled()) {
-            log.debug("destroy({})[{}]", getClientSession(), getService());
+            log.debug("destroy({})[{}]", getSession(), getService());
         }
     }
 

@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.client.session.ClientSessionHolder;
 import org.apache.sshd.common.session.SessionHolder;
 
 /**
@@ -31,7 +30,7 @@ import org.apache.sshd.common.session.SessionHolder;
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
 public abstract class AbstractKeyPairIterator<I extends PublicKeyIdentity>
-        implements Iterator<I>, SessionHolder<ClientSession>, ClientSessionHolder {
+        implements Iterator<I>, SessionHolder<ClientSession> {
 
     private final ClientSession session;
 
@@ -40,13 +39,8 @@ public abstract class AbstractKeyPairIterator<I extends PublicKeyIdentity>
     }
 
     @Override
-    public final ClientSession getClientSession() {
-        return session;
-    }
-
-    @Override
     public final ClientSession getSession() {
-        return getClientSession();
+        return session;
     }
 
     @Override
@@ -56,6 +50,6 @@ public abstract class AbstractKeyPairIterator<I extends PublicKeyIdentity>
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[" + getClientSession() + "]";
+        return getClass().getSimpleName() + "[" + getSession() + "]";
     }
 }

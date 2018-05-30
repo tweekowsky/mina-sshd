@@ -23,13 +23,14 @@ import java.nio.file.Path;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.subsystem.sftp.SftpConstants;
-import org.apache.sshd.server.session.ServerSessionHolder;
+import org.apache.sshd.server.session.ServerSession;
 
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface SftpSubsystemEnvironment extends ServerSessionHolder {
+public interface SftpSubsystemEnvironment extends SessionHolder<ServerSession> {
     /**
      * Force the use of a given sftp version
      */

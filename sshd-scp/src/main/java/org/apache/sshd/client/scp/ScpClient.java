@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.client.session.ClientSessionHolder;
+import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.scp.ScpHelper;
 import org.apache.sshd.common.scp.ScpTimestamp;
 import org.apache.sshd.common.session.SessionHolder;
@@ -40,7 +40,7 @@ import org.apache.sshd.common.util.ValidateUtils;
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface ScpClient extends SessionHolder<ClientSession>, ClientSessionHolder, Closeable {
+public interface ScpClient extends SessionHolder<ClientSession>, Closeable {
     enum Option {
         Recursive,
         PreserveAttributes,

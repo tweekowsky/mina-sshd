@@ -259,7 +259,7 @@ public class UserAuthPublicKey extends AbstractUserAuth implements SignatureFact
         try {
             if (keys instanceof Closeable) {
                 if (log.isTraceEnabled()) {
-                    log.trace("releaseKeys({}) closing {}", getClientSession(), keys);
+                    log.trace("releaseKeys({}) closing {}", getSession(), keys);
                 }
                 ((Closeable) keys).close();
             }

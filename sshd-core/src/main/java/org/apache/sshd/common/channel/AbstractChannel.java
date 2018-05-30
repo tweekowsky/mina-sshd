@@ -66,9 +66,9 @@ import org.apache.sshd.common.util.threads.ExecutorServiceConfigurer;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public abstract class AbstractChannel
+public abstract class AbstractChannel<S extends Session>
         extends AbstractInnerCloseable
-        implements Channel, ExecutorServiceConfigurer {
+        implements Channel<S>, ExecutorServiceConfigurer {
 
     /**
      * Default growth factor function used to resize response buffers
@@ -93,7 +93,7 @@ public abstract class AbstractChannel
 
     private int id = -1;
     private int recipient = -1;
-    private Session sessionInstance;
+    private S sessionInstance;
     private ExecutorService executor;
     private boolean shutdownExecutor;
     private final List<RequestHandler<Channel>> requestHandlers = new CopyOnWriteArrayList<>();
@@ -174,7 +174,7 @@ public abstract class AbstractChannel
     }
 
     @Override
-    public Session getSession() {
+    public S getSession() {
         return sessionInstance;
     }
 
@@ -372,7 +372,7 @@ public abstract class AbstractChannel
     }
 
     @Override
-    public void init(ConnectionService service, Session session, int id) throws IOException {
+    public void init(ConnectionService service, S session, int id) throws IOException {
         if (log.isDebugEnabled()) {
             log.debug("init() service={} session={} id={}", service, session, id);
         }

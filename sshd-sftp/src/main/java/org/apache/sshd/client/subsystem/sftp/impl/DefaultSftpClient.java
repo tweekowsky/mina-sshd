@@ -120,7 +120,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
     }
 
     @Override
-    public ClientSession getClientSession() {
+    public ClientSession getSession() {
         return clientSession;
     }
 
@@ -207,7 +207,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
     protected boolean receive(Buffer incoming) throws IOException {
         int rpos = incoming.rpos();
         int wpos = incoming.wpos();
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         session.resetIdleTimeout();
 
         if ((wpos - rpos) > 4) {
@@ -439,7 +439,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
             }
         }
 
-        int selected = selector.selectVersion(getClientSession(), current, new ArrayList<>(available));
+        int selected = selector.selectVersion(getSession(), current, new ArrayList<>(available));
         if (log.isDebugEnabled()) {
             log.debug("negotiateVersion({}) current={} {} -> {}", getClientChannel(), current, available, selected);
         }

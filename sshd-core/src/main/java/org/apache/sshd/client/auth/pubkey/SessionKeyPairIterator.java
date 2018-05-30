@@ -45,6 +45,6 @@ public class SessionKeyPairIterator extends AbstractKeyPairIterator<KeyPairIdent
 
     @Override
     public KeyPairIdentity next() {
-        return new KeyPairIdentity(signatureFactories, getClientSession(), keys.next());
+        return new KeyPairIdentity(signatureFactories, getSession(), keys.next());
     }
 }

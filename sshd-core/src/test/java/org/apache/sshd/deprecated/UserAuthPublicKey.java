@@ -47,7 +47,7 @@ public class UserAuthPublicKey extends AbstractUserAuth {
 
     @Override
     public Result next(Buffer buffer) throws IOException {
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         String service = getService();
         boolean debugEnabled = log.isDebugEnabled();
         if (buffer == null) {

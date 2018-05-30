@@ -60,7 +60,7 @@ public class UserAuthGSS extends AbstractUserAuth {
 
     @Override
     protected Boolean doAuth(Buffer buffer, boolean initial) throws Exception {
-        ServerSession session = getServerSession();
+        ServerSession session = this.getSession();
         GSSAuthenticator auth = Objects.requireNonNull(session.getGSSAuthenticator(), "No GSSAuthenticator configured");
 
         boolean debugEnabled = log.isDebugEnabled();

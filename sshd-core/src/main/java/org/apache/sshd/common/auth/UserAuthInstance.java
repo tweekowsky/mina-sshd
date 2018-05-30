@@ -21,6 +21,7 @@ package org.apache.sshd.common.auth;
 
 import org.apache.sshd.common.NamedResource;
 import org.apache.sshd.common.session.Session;
+import org.apache.sshd.common.session.SessionHolder;
 
 /**
  * Represents an authentication-in-progress tracker for a specific session
@@ -29,12 +30,14 @@ import org.apache.sshd.common.session.Session;
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
 //CHECKSTYLE:OFF
-public interface UserAuthInstance<S extends Session> extends NamedResource {
+public interface UserAuthInstance<S extends Session> extends SessionHolder<S>, NamedResource {
+
     /**
      * @return The current session for which the authentication is being
      * tracked. <B>Note:</B> may be {@code null} if the instance has not
      * been initialized yet
      */
+    @Override
     S getSession();
 }
 //CHECKSTYLE:ON

@@ -22,14 +22,13 @@ import org.apache.sshd.common.auth.UserAuthInstance;
 import org.apache.sshd.common.auth.UsernameHolder;
 import org.apache.sshd.common.util.buffer.Buffer;
 import org.apache.sshd.server.session.ServerSession;
-import org.apache.sshd.server.session.ServerSessionHolder;
 
 /**
  * Server side authentication mechanism.
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface UserAuth extends ServerSessionHolder, UserAuthInstance<ServerSession>, UsernameHolder {
+public interface UserAuth extends UserAuthInstance<ServerSession>, UsernameHolder {
 
     /**
      * Try to authenticate the user. This methods should return a non {@code null}

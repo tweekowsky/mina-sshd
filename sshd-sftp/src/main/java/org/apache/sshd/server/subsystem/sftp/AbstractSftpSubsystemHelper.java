@@ -251,7 +251,7 @@ public abstract class AbstractSftpSubsystemHelper
     protected Boolean validateProposedVersion(Buffer buffer, int id, String proposed) throws IOException {
         if (log.isDebugEnabled()) {
             log.debug("validateProposedVersion({})[id={}] SSH_FXP_EXTENDED(version-select) (version={})",
-                      getServerSession(), id, proposed);
+                      getSession(), id, proposed);
         }
 
         if (GenericUtils.length(proposed) != 1) {
@@ -292,7 +292,7 @@ public abstract class AbstractSftpSubsystemHelper
         int hig = SftpSubsystemEnvironment.HIGHER_SFTP_IMPL;
         String available = SftpSubsystemEnvironment.ALL_SFTP_IMPL;
         // check if user wants to use a specific version
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
         Integer sftpVersion = session.getInteger(SftpSubsystemEnvironment.SFTP_VERSION);
         if (sftpVersion != null) {
             int forcedValue = sftpVersion;
@@ -330,7 +330,7 @@ public abstract class AbstractSftpSubsystemHelper
         int id = buffer.getInt();
         if (log.isDebugEnabled()) {
             log.debug("process({})[length={}, type={}, id={}] processing",
-                    getServerSession(), length, SftpConstants.getCommandMessageName(type), id);
+                    getSession(), length, SftpConstants.getCommandMessageName(type), id);
         }
         doProcess(buffer, length, type, id);
     }
@@ -415,7 +415,7 @@ public abstract class AbstractSftpSubsystemHelper
     protected void doUnsupported(Buffer buffer, int length, int type, int id) throws IOException {
         String name = SftpConstants.getCommandMessageName(type);
         log.warn("process({})[length={}, type={}, id={}] unknown command",
-                getServerSession(), length, name, id);
+                getSession(), length, name, id);
         sendStatus(prepareReply(buffer), id, SftpConstants.SSH_FX_OP_UNSUPPORTED, "Command " + name + " is unsupported or not implemented");
     }
 
@@ -508,7 +508,7 @@ public abstract class AbstractSftpSubsystemHelper
 
     protected <E extends IOException> E signalOpenFailure(int id, String pathValue, Path path, boolean isDir, E thrown) throws IOException {
         SftpEventListener listener = getSftpEventListenerProxy();
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
         if (log.isDebugEnabled()) {
             log.debug("signalOpenFailure(id={})[{}] signal {} for {}: {}",
                     id, pathValue, thrown.getClass().getSimpleName(), path, thrown.getMessage());
@@ -536,7 +536,7 @@ public abstract class AbstractSftpSubsystemHelper
         String handle = buffer.getString();
         long offset = buffer.getLong();
         int requestedLength = buffer.getInt();
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
         int maxAllowed = session.getIntProperty(MAX_READDATA_PACKET_LENGTH_PROP, DEFAULT_MAX_READDATA_PACKET_LENGTH);
         int readLen = Math.min(requestedLength, maxAllowed);
         if (log.isTraceEnabled()) {
@@ -611,7 +611,7 @@ public abstract class AbstractSftpSubsystemHelper
         Path p = resolveFile(path);
         if (log.isDebugEnabled()) {
             log.debug("doLStat({})[id={}] SSH_FXP_LSTAT (path={}[{}], flags=0x{})",
-                      getServerSession(), id, path, p, Integer.toHexString(flags));
+                      getSession(), id, path, p, Integer.toHexString(flags));
         }
 
         /*
@@ -637,7 +637,7 @@ public abstract class AbstractSftpSubsystemHelper
     protected void doSetStat(int id, String path, Map<String, ?> attrs) throws IOException {
         if (log.isDebugEnabled()) {
             log.debug("doSetStat({})[id={}] SSH_FXP_SETSTAT (path={}, attrs={})",
-                      getServerSession(), id, path, attrs);
+                      getSession(), id, path, attrs);
         }
         Path p = resolveFile(path);
         doSetAttributes(p, attrs);
@@ -687,7 +687,7 @@ public abstract class AbstractSftpSubsystemHelper
             Path p = resolveNormalizedLocation(path);
             if (log.isDebugEnabled()) {
                 log.debug("doOpenDir({})[id={}] SSH_FXP_OPENDIR (path={})[{}]",
-                          getServerSession(), id, path, p);
+                          getSession(), id, path, p);
             }
 
             LinkOption[] options =
@@ -713,7 +713,7 @@ public abstract class AbstractSftpSubsystemHelper
         try {
             if (log.isDebugEnabled()) {
                 log.debug("doLink({})[id={}] SSH_FXP_LINK linkpath={}, targetpath={}, symlink={}",
-                          getServerSession(), id, linkPath, targetPath, symLink);
+                          getSession(), id, linkPath, targetPath, symLink);
             }
 
             doLink(id, targetPath, linkPath, symLink);
@@ -735,7 +735,7 @@ public abstract class AbstractSftpSubsystemHelper
         try {
             if (log.isDebugEnabled()) {
                 log.debug("doSymLink({})[id={}] SSH_FXP_SYMLINK linkpath={}, targetpath={}",
-                          getServerSession(), id, targetPath, linkPath);
+                          getSession(), id, targetPath, linkPath);
             }
             doSymLink(id, targetPath, linkPath);
         } catch (IOException | RuntimeException e) {
@@ -770,7 +770,7 @@ public abstract class AbstractSftpSubsystemHelper
     protected void doOpenSSHHardLink(int id, String srcFile, String dstFile) throws IOException {
         if (log.isDebugEnabled()) {
             log.debug("doOpenSSHHardLink({})[id={}] SSH_FXP_EXTENDED[{}] (src={}, dst={})",
-                      getServerSession(), id, HardLinkExtensionParser.NAME, srcFile, dstFile);
+                      getSession(), id, HardLinkExtensionParser.NAME, srcFile, dstFile);
         }
 
         createLink(id, srcFile, dstFile, false);
@@ -795,7 +795,7 @@ public abstract class AbstractSftpSubsystemHelper
 
     protected SpaceAvailableExtensionInfo doSpaceAvailable(int id, String path) throws IOException {
         Path nrm = resolveNormalizedLocation(path);
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
         if (log.isDebugEnabled()) {
             log.debug("doSpaceAvailable({})[id={}] path={}[{}]", session, id, path, nrm);
         }
@@ -888,7 +888,7 @@ public abstract class AbstractSftpSubsystemHelper
                 : new byte[Math.min((int) effectiveLength, blockSize)];
         ByteBuffer wb = ByteBuffer.wrap(digestBuf);
         SftpFileSystemAccessor accessor = getFileSystemAccessor();
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
         try (SeekableByteChannel channel = accessor.openFile(session, this, file, "", Collections.emptySet())) {
             channel.position(startOffset);
 
@@ -961,7 +961,7 @@ public abstract class AbstractSftpSubsystemHelper
             hashValue = doMD5Hash(id, targetType, target, startOffset, length, quickCheckHash);
             if (log.isTraceEnabled()) {
                 log.trace("doMD5Hash({})({})[{}] offset={}, length={}, quick-hash={} - hash={}",
-                          getServerSession(), targetType, target, startOffset, length,
+                          getSession(), targetType, target, startOffset, length,
                           BufferUtils.toHex(':', quickCheckHash),
                           BufferUtils.toHex(':', hashValue));
             }
@@ -1001,7 +1001,7 @@ public abstract class AbstractSftpSubsystemHelper
         byte[] hashValue = null;
         SftpFileSystemAccessor accessor = getFileSystemAccessor();
         boolean traceEnabled = log.isTraceEnabled();
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
         try (SeekableByteChannel channel = accessor.openFile(session, this, path, null, EnumSet.of(StandardOpenOption.READ))) {
             channel.position(startOffset);
 
@@ -1096,7 +1096,7 @@ public abstract class AbstractSftpSubsystemHelper
         try {
             if (log.isDebugEnabled()) {
                 log.debug("doReadLink({})[id={}] SSH_FXP_READLINK path={}",
-                          getServerSession(), id, path);
+                          getSession(), id, path);
             }
             l = doReadLink(id, path);
         } catch (IOException | RuntimeException e) {
@@ -1112,7 +1112,7 @@ public abstract class AbstractSftpSubsystemHelper
         Path t = Files.readSymbolicLink(f);
         if (log.isDebugEnabled()) {
             log.debug("doReadLink({})[id={}] path={}[{}]: {}",
-                      getServerSession(), id, path, f, t);
+                      getSession(), id, path, f, t);
         }
         return t.toString();
     }
@@ -1138,7 +1138,7 @@ public abstract class AbstractSftpSubsystemHelper
     protected void doRename(int id, String oldPath, String newPath, int flags) throws IOException {
         if (log.isDebugEnabled()) {
             log.debug("doRename({})[id={}] SSH_FXP_RENAME (oldPath={}, newPath={}, flags=0x{})",
-                      getServerSession(), id, oldPath, newPath, Integer.toHexString(flags));
+                      getSession(), id, oldPath, newPath, Integer.toHexString(flags));
         }
 
         Collection<CopyOption> opts = Collections.emptyList();
@@ -1159,7 +1159,7 @@ public abstract class AbstractSftpSubsystemHelper
         Path o = resolveFile(oldPath);
         Path n = resolveFile(newPath);
         SftpEventListener listener = getSftpEventListenerProxy();
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
 
         listener.moving(session, o, n, opts);
         try {
@@ -1212,7 +1212,7 @@ public abstract class AbstractSftpSubsystemHelper
     protected void doCopyFile(int id, String srcFile, String dstFile, boolean overwriteDestination) throws IOException {
         if (log.isDebugEnabled()) {
             log.debug("doCopyFile({})[id={}] SSH_FXP_EXTENDED[{}] (src={}, dst={}, overwrite=0x{})",
-                      getServerSession(), id, SftpConstants.EXT_COPY_FILE,
+                      getSession(), id, SftpConstants.EXT_COPY_FILE,
                       srcFile, dstFile, overwriteDestination);
         }
 
@@ -1284,7 +1284,7 @@ public abstract class AbstractSftpSubsystemHelper
     protected Map<String, Object> doStat(int id, String path, int flags) throws IOException {
         if (log.isDebugEnabled()) {
             log.debug("doStat({})[id={}] SSH_FXP_STAT (path={}, flags=0x{})",
-                      getServerSession(), id, path, Integer.toHexString(flags));
+                      getSession(), id, path, Integer.toHexString(flags));
         }
 
         /*
@@ -1298,7 +1298,7 @@ public abstract class AbstractSftpSubsystemHelper
     protected void doRealPath(Buffer buffer, int id) throws IOException {
         String path = buffer.getString();
         boolean debugEnabled = log.isDebugEnabled();
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
         if (debugEnabled) {
             log.debug("doRealPath({})[id={}] SSH_FXP_REALPATH (path={})", session, id, path);
         }
@@ -1405,7 +1405,7 @@ public abstract class AbstractSftpSubsystemHelper
         if (numExtra > 0) {
             if (log.isDebugEnabled()) {
                 log.debug("doRealPathV6({})[id={}] path={}, extra={}",
-                          getServerSession(), id, path, extraPaths);
+                          getSession(), id, path, extraPaths);
             }
             StringBuilder sb = new StringBuilder(GenericUtils.length(path) + numExtra * 8);
             sb.append(path);
@@ -1458,7 +1458,7 @@ public abstract class AbstractSftpSubsystemHelper
         Path p = resolveFile(path);
         if (log.isDebugEnabled()) {
             log.debug("doRemoveDirectory({})[id={}] SSH_FXP_RMDIR (path={})[{}]",
-                      getServerSession(), id, path, p);
+                      getSession(), id, path, p);
         }
         if (Files.isDirectory(p, options)) {
             doRemove(id, p);
@@ -1476,7 +1476,7 @@ public abstract class AbstractSftpSubsystemHelper
      */
     protected void doRemove(int id, Path p) throws IOException {
         SftpEventListener listener = getSftpEventListenerProxy();
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
         listener.removing(session, p);
         try {
             Files.delete(p);
@@ -1502,7 +1502,7 @@ public abstract class AbstractSftpSubsystemHelper
 
     protected void doMakeDirectory(int id, String path, Map<String, ?> attrs, LinkOption... options) throws IOException {
         Path p = resolveFile(path);
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
         if (log.isDebugEnabled()) {
             log.debug("doMakeDirectory({})[id={}] SSH_FXP_MKDIR (path={}[{}], attrs={})",
                     session, id, path, p, attrs);
@@ -1553,7 +1553,7 @@ public abstract class AbstractSftpSubsystemHelper
         Path p = resolveFile(path);
         if (log.isDebugEnabled()) {
             log.debug("doRemove({})[id={}] SSH_FXP_REMOVE (path={}[{}])",
-                      getServerSession(), id, path, p);
+                      getSession(), id, path, p);
         }
 
         Boolean status = IoUtils.checkFileExists(p, options);
@@ -1573,7 +1573,7 @@ public abstract class AbstractSftpSubsystemHelper
 
     protected <E extends IOException> E signalRemovalPreConditionFailure(int id, String pathValue, Path path, E thrown) throws IOException {
         SftpEventListener listener = getSftpEventListenerProxy();
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
         if (log.isDebugEnabled()) {
             log.debug("signalRemovalPreConditionFailure(id={})[{}] signal {} for {}: {}",
                     id, pathValue, thrown.getClass().getSimpleName(), path, thrown.getMessage());
@@ -1632,14 +1632,14 @@ public abstract class AbstractSftpSubsystemHelper
 
     protected void doUnsupportedExtension(Buffer buffer, int id, String extension) throws IOException {
         if (log.isDebugEnabled()) {
-            log.debug("executeExtendedCommand({}) received unsupported SSH_FXP_EXTENDED({})", getServerSession(), extension);
+            log.debug("executeExtendedCommand({}) received unsupported SSH_FXP_EXTENDED({})", getSession(), extension);
         }
         sendStatus(buffer, id, SftpConstants.SSH_FX_OP_UNSUPPORTED, "Command SSH_FXP_EXTENDED(" + extension + ") is unsupported or not implemented");
     }
 
     protected void appendExtensions(Buffer buffer, String supportedVersions) {
         appendVersionsExtension(buffer, supportedVersions);
-        appendNewlineExtension(buffer, resolveNewlineValue(getServerSession()));
+        appendNewlineExtension(buffer, resolveNewlineValue(getSession()));
         appendVendorIdExtension(buffer, VersionProperties.getVersionProperties());
         appendOpenSSHExtensions(buffer);
         appendAclSupportedExtension(buffer);
@@ -1648,7 +1648,7 @@ public abstract class AbstractSftpSubsystemHelper
         int numExtensions = GenericUtils.size(extensions);
         List<String> extras = (numExtensions <= 0) ? Collections.emptyList() : new ArrayList<>(numExtensions);
         if (numExtensions > 0) {
-            ServerSession session = getServerSession();
+            ServerSession session = getSession();
             boolean debugEnabled = log.isDebugEnabled();
             extensions.forEach((name, f) -> {
                 if (!f.isSupported()) {
@@ -1666,7 +1666,7 @@ public abstract class AbstractSftpSubsystemHelper
     }
 
     protected int appendAclSupportedExtension(Buffer buffer) {
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
         Collection<Integer> maskValues = resolveAclSupportedCapabilities(session);
         int mask = AclSupportedParser.AclCapabilities.constructAclCapabilities(maskValues);
         if (mask != 0) {
@@ -1714,7 +1714,7 @@ public abstract class AbstractSftpSubsystemHelper
     }
 
     protected List<OpenSSHExtension> appendOpenSSHExtensions(Buffer buffer) {
-        List<OpenSSHExtension> extList = resolveOpenSSHExtensions(getServerSession());
+        List<OpenSSHExtension> extList = resolveOpenSSHExtensions(getSession());
         if (GenericUtils.isEmpty(extList)) {
             return extList;
         }
@@ -1761,7 +1761,7 @@ public abstract class AbstractSftpSubsystemHelper
     }
 
     protected Map<String, OptionalFeature> getSupportedClientExtensions() {
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
         String value = session.getString(CLIENT_EXTENSIONS_PROP);
         if (value == null) {
             return DEFAULT_SUPPORTED_CLIENT_EXTENSIONS;
@@ -1803,7 +1803,7 @@ public abstract class AbstractSftpSubsystemHelper
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("appendVersionsExtension({}) value={}", getServerSession(), value);
+            log.debug("appendVersionsExtension({}) value={}", getSession(), value);
         }
 
         buffer.putString(SftpConstants.EXT_VERSIONS);
@@ -1826,7 +1826,7 @@ public abstract class AbstractSftpSubsystemHelper
 
         if (log.isDebugEnabled()) {
             log.debug("appendNewlineExtension({}) value={}",
-                      getServerSession(), BufferUtils.toHex(':', value.getBytes(StandardCharsets.UTF_8)));
+                      getSession(), BufferUtils.toHex(':', value.getBytes(StandardCharsets.UTF_8)));
         }
 
         buffer.putString(SftpConstants.EXT_NEWLINE);
@@ -1864,7 +1864,7 @@ public abstract class AbstractSftpSubsystemHelper
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("appendVendorIdExtension({}): {}", getServerSession(), versionProperties);
+            log.debug("appendVendorIdExtension({}): {}", getSession(), versionProperties);
         }
         buffer.putString(SftpConstants.EXT_VENDOR_ID);
 
@@ -1990,7 +1990,7 @@ public abstract class AbstractSftpSubsystemHelper
         }
 
         writeAttrs(buffer, attrs);
-        SftpHelper.indicateEndOfNamesList(buffer, getVersion(), getServerSession());
+        SftpHelper.indicateEndOfNamesList(buffer, getVersion(), getSession());
         send(buffer);
     }
 
@@ -2010,7 +2010,7 @@ public abstract class AbstractSftpSubsystemHelper
         }
 
         writeAttrs(buffer, attrs);
-        SftpHelper.indicateEndOfNamesList(buffer, getVersion(), getServerSession());
+        SftpHelper.indicateEndOfNamesList(buffer, getVersion(), getSession());
         send(buffer);
     }
 
@@ -2045,7 +2045,7 @@ public abstract class AbstractSftpSubsystemHelper
         }
 
         SftpEventListener listener = getSftpEventListenerProxy();
-        listener.read(getServerSession(), handle, dir, entries);
+        listener.read(getSession(), handle, dir, entries);
         return nb;
     }
 
@@ -2073,12 +2073,12 @@ public abstract class AbstractSftpSubsystemHelper
             String longName = getLongName(f, shortName, options);
             buffer.putString(longName);
             if (log.isTraceEnabled()) {
-                log.trace("writeDirEntry(" + getServerSession() + ") id=" + id + ")[" + index + "] - "
+                log.trace("writeDirEntry(" + getSession() + ") id=" + id + ")[" + index + "] - "
                         + shortName + " [" + longName + "]: " + attrs);
             }
         } else {
             if (log.isTraceEnabled()) {
-                log.trace("writeDirEntry(" + getServerSession() + "(id=" + id + ")[" + index + "] - "
+                log.trace("writeDirEntry(" + getSession() + "(id=" + id + ")[" + index + "] - "
                         + shortName + ": " + attrs);
             }
         }
@@ -2168,10 +2168,10 @@ public abstract class AbstractSftpSubsystemHelper
             case ThrowException:
                 throw new AccessDeniedException(file.toString(), file.toString(), "Cannot determine existence for attributes of target");
             case Warn:
-                log.warn("handleUnknownStatusFileAttributes(" + getServerSession() + ")[" + file + "] cannot determine existence");
+                log.warn("handleUnknownStatusFileAttributes(" + getSession() + ")[" + file + "] cannot determine existence");
                 break;
             default:
-                log.warn("handleUnknownStatusFileAttributes(" + getServerSession() + ")[" + file + "] unknown policy: " + unsupportedAttributePolicy);
+                log.warn("handleUnknownStatusFileAttributes(" + getSession() + ")[" + file + "] unknown policy: " + unsupportedAttributePolicy);
         }
 
         return getAttributes(file, flags, options);
@@ -2259,15 +2259,15 @@ public abstract class AbstractSftpSubsystemHelper
 
                 if (debugEnabled) {
                     log.debug("resolveMissingFileAttributes({})[{}[{}]] replace {} with {}",
-                              getServerSession(), file, name, value, resolved);
+                              getSession(), file, name, value, resolved);
                 }
             } catch (IOException e) {
                 if (debugEnabled) {
                     log.debug("resolveMissingFileAttributes({})[{}[{}]] failed ({}) to resolve missing value: {}",
-                              getServerSession(), file, name, e.getClass().getSimpleName(), e.getMessage());
+                              getSession(), file, name, e.getClass().getSimpleName(), e.getMessage());
                 }
                 if (log.isTraceEnabled()) {
-                    log.trace("resolveMissingFileAttributes(" + getServerSession() + ")"
+                    log.trace("resolveMissingFileAttributes(" + getSession() + ")"
                             + "[" + file + "[" + name + "]] missing value resolution failure details", e);
                 }
             }
@@ -2349,7 +2349,7 @@ public abstract class AbstractSftpSubsystemHelper
 
     protected void doSetAttributes(Path file, Map<String, ?> attributes) throws IOException {
         SftpEventListener listener = getSftpEventListenerProxy();
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
         listener.modifyingAttributes(session, file, attributes);
         try {
             setFileAttributes(file, attributes, IoUtils.getLinkOptions(false));
@@ -2361,7 +2361,7 @@ public abstract class AbstractSftpSubsystemHelper
     }
 
     protected LinkOption[] getPathResolutionLinkOption(int cmd, String extension, Path path) throws IOException {
-        ServerSession session = getServerSession();
+        ServerSession session = getSession();
         boolean followLinks = PropertyResolverUtils.getBooleanProperty(session, AUTO_FOLLOW_LINKS, DEFAULT_AUTO_FOLLOW_LINKS);
         return IoUtils.getLinkOptions(followLinks);
     }
@@ -2377,7 +2377,7 @@ public abstract class AbstractSftpSubsystemHelper
                 case "size": {
                     long newSize = ((Number) value).longValue();
                     SftpFileSystemAccessor accessor = getFileSystemAccessor();
-                    try (SeekableByteChannel channel = accessor.openFile(getServerSession(), this, file, null, EnumSet.of(StandardOpenOption.WRITE))) {
+                    try (SeekableByteChannel channel = accessor.openFile(getSession(), this, file, null, EnumSet.of(StandardOpenOption.WRITE))) {
                         channel.truncate(newSize);
                     }
                     continue;
@@ -2433,14 +2433,14 @@ public abstract class AbstractSftpSubsystemHelper
         if (e instanceof UnsupportedOperationException) {
             if (debugEnabled) {
                 log.debug("handleSetFileAttributeFailure({})[{}] {}:{}={} unsupported: {}",
-                          getServerSession(), file, view, attribute, value, e.getMessage());
+                          getSession(), file, view, attribute, value, e.getMessage());
             }
             unsupported.add(attribute);
         } else {
             log.warn("handleSetFileAttributeFailure({})[{}] {}:{}={} - failed ({}) to set: {}",
-                     getServerSession(), file, view, attribute, value, e.getClass().getSimpleName(), e.getMessage());
+                     getSession(), file, view, attribute, value, e.getClass().getSimpleName(), e.getMessage());
             if (debugEnabled) {
-                log.debug("handleSetFileAttributeFailure(" + getServerSession() + ")"
+                log.debug("handleSetFileAttributeFailure(" + getSession() + ")"
                         + "[" + file + "] " + view + ":" + attribute + "=" + value
                         + " failure details", e);
             }
@@ -2454,7 +2454,7 @@ public abstract class AbstractSftpSubsystemHelper
 
     protected void setFileAttribute(Path file, String view, String attribute, Object value, LinkOption... options) throws IOException {
         if (log.isTraceEnabled()) {
-            log.trace("setFileAttribute({})[{}] {}:{}={}", getServerSession(), file, view, attribute, value);
+            log.trace("setFileAttribute({})[{}] {}:{}={}", getSession(), file, view, attribute, value);
         }
 
         if ("acl".equalsIgnoreCase(attribute) && "acl".equalsIgnoreCase(view)) {
@@ -2484,7 +2484,7 @@ public abstract class AbstractSftpSubsystemHelper
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("setFileTime({})[{}] {}:{}={}", getServerSession(), file, view, attribute, value);
+            log.debug("setFileTime({})[{}] {}:{}={}", getSession(), file, view, attribute, value);
         }
 
         Files.setAttribute(file, view + ":" + attribute, value, options);
@@ -2496,7 +2496,7 @@ public abstract class AbstractSftpSubsystemHelper
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("setFileOwnership({})[{}] {}={}", getServerSession(), file, attribute, value);
+            log.debug("setFileOwnership({})[{}] {}={}", getSession(), file, attribute, value);
         }
 
         /*
@@ -2548,7 +2548,7 @@ public abstract class AbstractSftpSubsystemHelper
         int version = getVersion();
         if (version < SftpConstants.SFTP_V6) {
             if (log.isDebugEnabled()) {
-                log.debug("setFileExtensions({})[{}]: {}", getServerSession(), file, extensions);
+                log.debug("setFileExtensions({})[{}]: {}", getSession(), file, extensions);
             }
         } else {
             throw new UnsupportedOperationException("File extensions not supported");
@@ -2567,7 +2567,7 @@ public abstract class AbstractSftpSubsystemHelper
         }
 
         if (log.isTraceEnabled()) {
-            log.trace("setFilePermissions({})[{}] {}", getServerSession(), file, perms);
+            log.trace("setFilePermissions({})[{}] {}", getSession(), file, perms);
         }
         view.setPermissions(perms);
     }
@@ -2579,7 +2579,7 @@ public abstract class AbstractSftpSubsystemHelper
         }
 
         if (log.isTraceEnabled()) {
-            log.trace("setFileAccessControl({})[{}] {}", getServerSession(), file, acl);
+            log.trace("setFileAccessControl({})[{}] {}", getSession(), file, acl);
         }
         view.setAcl(acl);
     }
@@ -2715,7 +2715,7 @@ public abstract class AbstractSftpSubsystemHelper
     protected void sendStatus(Buffer buffer, int id, int substatus, String msg, String lang) throws IOException {
         if (log.isDebugEnabled()) {
             log.debug("doSendStatus({})[id={}] SSH_FXP_STATUS (substatus={}, lang={}, msg={})",
-                      getServerSession(), id, SftpConstants.getStatusName(substatus), lang, msg);
+                      getSession(), id, SftpConstants.getStatusName(substatus), lang, msg);
         }
 
         buffer.putByte((byte) SftpConstants.SSH_FXP_STATUS);
@@ -2756,7 +2756,7 @@ public abstract class AbstractSftpSubsystemHelper
         String path = SelectorUtils.translateToLocalFileSystemPath(remotePath, '/', defaultDir.getFileSystem());
         Path p = defaultDir.resolve(path);
         if (log.isTraceEnabled()) {
-            log.trace("resolveFile({}) {} => {}", getServerSession(), remotePath, p);
+            log.trace("resolveFile({}) {} => {}", getSession(), remotePath, p);
         }
         return p;
     }

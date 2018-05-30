@@ -47,6 +47,7 @@ import org.apache.sshd.common.SshException;
 import org.apache.sshd.common.config.keys.KeyRandomArt;
 import org.apache.sshd.common.io.IoWriteFuture;
 import org.apache.sshd.common.session.Session;
+import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.NumberUtils;
 import org.apache.sshd.common.util.ValidateUtils;
@@ -63,7 +64,8 @@ import org.apache.sshd.server.auth.WelcomeBannerPhase;
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class ServerUserAuthService extends AbstractCloseable implements Service, ServerSessionHolder {
+public class ServerUserAuthService extends AbstractCloseable implements Service, SessionHolder<ServerSession> {
+
     private final ServerSession serverSession;
     private final AtomicBoolean welcomeSent = new AtomicBoolean(false);
     private final WelcomeBannerPhase welcomePhase;
@@ -135,18 +137,13 @@ public class ServerUserAuthService extends AbstractCloseable implements Service,
 
     @Override
     public ServerSession getSession() {
-        return getServerSession();
-    }
-
-    @Override
-    public ServerSession getServerSession() {
         return serverSession;
     }
 
     @Override
     public synchronized void process(int cmd, Buffer buffer) throws Exception {
         Boolean authed = Boolean.FALSE;
-        ServerSession session = getServerSession();
+        ServerSession session = this.getSession();
         boolean debugEnabled = log.isDebugEnabled();
         if (cmd == SshConstants.SSH_MSG_USERAUTH_REQUEST) {
             if (WelcomeBannerPhase.FIRST_REQUEST.equals(getWelcomePhase())) {
@@ -272,13 +269,13 @@ public class ServerUserAuthService extends AbstractCloseable implements Service,
         String username = (currentAuth == null) ? null : currentAuth.getUsername();
         if (log.isDebugEnabled()) {
             log.debug("handleAuthenticationInProgress({}@{}) {}",
-                      username, getServerSession(), SshConstants.getCommandMessageName(cmd));
+                      username, this.getSession(), SshConstants.getCommandMessageName(cmd));
         }
     }
 
     protected void handleAuthenticationSuccess(int cmd, Buffer buffer) throws Exception {
         String username = Objects.requireNonNull(currentAuth, "No current auth").getUsername();
-        ServerSession session = getServerSession();
+        ServerSession session = this.getSession();
         boolean debugEnabled = log.isDebugEnabled();
         if (debugEnabled) {
             log.debug("handleAuthenticationSuccess({}@{}) {}",
@@ -339,7 +336,7 @@ public class ServerUserAuthService extends AbstractCloseable implements Service,
     }
 
     protected void handleAuthenticationFailure(int cmd, Buffer buffer) throws Exception {
-        ServerSession session = getServerSession();
+        ServerSession session = this.getSession();
         boolean debugEnabled = log.isDebugEnabled();
         if (WelcomeBannerPhase.FIRST_FAILURE.equals(getWelcomePhase())) {
             sendWelcomeBanner(session);

@@ -73,7 +73,7 @@ public abstract class AbstractGitCommand
 
     @Override
     public String toString() {
-        return super.toString() + "[session=" + getServerSession() + "]";
+        return super.toString() + "[session=" + this.getSession() + "]";
     }
 
     /**

@@ -78,7 +78,7 @@ public class UserAuthPublicKey extends AbstractUserAuth implements SignatureFact
         int len = buffer.getInt();
         buffer.wpos(buffer.rpos() + len);
 
-        ServerSession session = getServerSession();
+        ServerSession session = this.getSession();
         String username = getUsername();
         PublicKey key = buffer.getRawPublicKey();
         Collection<NamedFactory<Signature>> factories =

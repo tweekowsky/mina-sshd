@@ -19,6 +19,7 @@
 package org.apache.sshd.server.session;
 
 import org.apache.sshd.common.SshException;
+import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.session.helpers.AbstractConnectionService;
 
 /**
@@ -28,7 +29,8 @@ import org.apache.sshd.common.session.helpers.AbstractConnectionService;
  */
 public class ServerConnectionService
         extends AbstractConnectionService<AbstractServerSession>
-        implements ServerSessionHolder {
+        implements SessionHolder<ServerSession> {
+
     protected ServerConnectionService(AbstractServerSession s) throws SshException {
         super(s);
 
@@ -37,8 +39,4 @@ public class ServerConnectionService
         }
     }
 
-    @Override
-    public final ServerSession getServerSession() {
-        return getSession();
-    }
 }

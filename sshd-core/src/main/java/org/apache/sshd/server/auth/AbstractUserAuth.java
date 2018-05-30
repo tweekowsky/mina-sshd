@@ -53,13 +53,8 @@ public abstract class AbstractUserAuth extends AbstractLoggingBean implements Us
     }
 
     @Override
-    public ServerSession getServerSession() {
-        return session;
-    }
-
-    @Override
     public ServerSession getSession() {
-        return getServerSession();
+        return session;
     }
 
     @Override

@@ -42,7 +42,7 @@ import org.apache.sshd.server.session.ServerSession;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public abstract class AbstractServerChannel extends AbstractChannel implements ServerChannel {
+public abstract class AbstractServerChannel extends AbstractChannel<ServerSession> implements ServerChannel {
 
     protected final AtomicBoolean exitStatusSent = new AtomicBoolean(false);
 
@@ -56,11 +56,6 @@ public abstract class AbstractServerChannel extends AbstractChannel implements S
 
     protected AbstractServerChannel(String discriminator, Collection<? extends RequestHandler<Channel>> handlers) {
         super(discriminator, false, handlers);
-    }
-
-    @Override
-    public ServerSession getServerSession() {
-        return (ServerSession) getSession();
     }
 
     @Override

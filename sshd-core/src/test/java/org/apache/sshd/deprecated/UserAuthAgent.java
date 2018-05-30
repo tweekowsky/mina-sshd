@@ -51,7 +51,7 @@ public class UserAuthAgent extends AbstractUserAuth {
     }
 
     protected void sendNextKey(PublicKey key) throws IOException {
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         String service = getService();
         try {
             log.debug("Send SSH_MSG_USERAUTH_REQUEST for publickey");

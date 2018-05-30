@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.sshd.client.auth.keyboard.UserInteraction;
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.client.session.ClientSessionHolder;
+import org.apache.sshd.common.session.SessionHolder;
 import org.apache.sshd.common.util.GenericUtils;
 
 /**
@@ -60,7 +60,7 @@ import org.apache.sshd.common.util.GenericUtils;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class InteractivePasswordIdentityProvider implements Iterator<String>, ClientSessionHolder {
+public class InteractivePasswordIdentityProvider implements Iterator<String>, SessionHolder<ClientSession> {
     /** Special marker to indicate that we exhausted all attempts */
     protected static final String EOF = "EOF";
 
@@ -76,7 +76,7 @@ public class InteractivePasswordIdentityProvider implements Iterator<String>, Cl
     }
 
     @Override
-    public ClientSession getClientSession() {
+    public ClientSession getSession() {
         return clientSession;
     }
 
@@ -118,7 +118,7 @@ public class InteractivePasswordIdentityProvider implements Iterator<String>, Cl
     }
 
     protected String resolveNextPassword() {
-        ClientSession session = getClientSession();
+        ClientSession session = getSession();
         UserInteraction ui = getUserInteraction();
         if (!ui.isInteractionAllowed(session)) {
             return null;

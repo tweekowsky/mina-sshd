@@ -160,7 +160,7 @@ public class ScpCommand
     public void run() {
         int exitValue = ScpHelper.OK;
         String exitMessage = null;
-        ScpHelper helper = new ScpHelper(getServerSession(), in, out, fileSystem, opener, listener);
+        ScpHelper helper = new ScpHelper(this.getSession(), in, out, fileSystem, opener, listener);
         try {
             if (optT) {
                 helper.receive(helper.resolveLocalPath(path), optR, optD, optP, receiveBufferSize);
@@ -170,7 +170,7 @@ public class ScpCommand
                 throw new IOException("Unsupported mode");
             }
         } catch (IOException e) {
-            ServerSession session = getServerSession();
+            ServerSession session = this.getSession();
             boolean debugEnabled = log.isDebugEnabled();
             try {
                 Integer statusCode = null;
@@ -214,7 +214,7 @@ public class ScpCommand
     protected void writeCommandResponseMessage(String command, int exitValue, String exitMessage) throws IOException {
         if (log.isDebugEnabled()) {
             log.debug("writeCommandResponseMessage({}) command='{}', exit-status={}: {}",
-                      getServerSession(), command, exitValue, exitMessage);
+                      this.getSession(), command, exitValue, exitMessage);
         }
         ScpHelper.sendResponseMessage(out, exitValue, exitMessage);
     }

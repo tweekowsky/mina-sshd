@@ -65,7 +65,7 @@ public class FileHandle extends Handle {
                 ? IoUtils.EMPTY_FILE_ATTRIBUTES
                 : fileAttributes.toArray(new FileAttribute<?>[fileAttributes.size()]);
         SftpFileSystemAccessor accessor = subsystem.getFileSystemAccessor();
-        ServerSession session = subsystem.getServerSession();
+        ServerSession session = subsystem.getSession();
         SeekableByteChannel channel;
         try {
             channel = accessor.openFile(session, subsystem, file, handle, openOptions, fileAttrs);
@@ -146,7 +146,7 @@ public class FileHandle extends Handle {
         SeekableByteChannel channel = getFileChannel();
         long size = (length == 0L) ? channel.size() - offset : length;
         SftpFileSystemAccessor accessor = subsystem.getFileSystemAccessor();
-        ServerSession session = subsystem.getServerSession();
+        ServerSession session = subsystem.getSession();
         FileLock lock = accessor.tryLock(session, subsystem, getFile(), getFileHandle(), channel, offset, size, false);
         if (lock == null) {
             throw new SftpException(SftpConstants.SSH_FX_BYTE_RANGE_LOCK_REFUSED,
