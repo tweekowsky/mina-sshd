@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.apache.sshd.client.future.OpenFuture;
-import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.channel.Channel;
 import org.apache.sshd.common.io.IoInputStream;
 import org.apache.sshd.common.io.IoOutputStream;
@@ -40,7 +39,7 @@ import org.apache.sshd.common.io.IoOutputStream;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface ClientChannel extends Channel<ClientSession> {
+public interface ClientChannel extends Channel {
     enum Streaming {
         Async,
         Sync

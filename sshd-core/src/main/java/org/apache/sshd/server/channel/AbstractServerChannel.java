@@ -35,28 +35,30 @@ import org.apache.sshd.common.channel.Window;
 import org.apache.sshd.common.session.Session;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.buffer.Buffer;
-import org.apache.sshd.server.session.ServerSession;
+import org.apache.sshd.common.util.threads.ExecutorService;
 
 /**
  * TODO Add javadoc
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public abstract class AbstractServerChannel extends AbstractChannel<ServerSession> implements ServerChannel {
+public abstract class AbstractServerChannel extends AbstractChannel implements ServerChannel {
 
     protected final AtomicBoolean exitStatusSent = new AtomicBoolean(false);
 
-    protected AbstractServerChannel() {
-        this(Collections.emptyList());
+    protected AbstractServerChannel(ExecutorService executor) {
+        super("", false, Collections.emptyList(), executor);
     }
 
-    protected AbstractServerChannel(Collection<? extends RequestHandler<Channel>> handlers) {
-        this("", handlers);
+    protected AbstractServerChannel(String discriminator, Collection<? extends RequestHandler<Channel>> handlers, ExecutorService executor) {
+        super(discriminator, false, handlers, executor);
     }
 
-    protected AbstractServerChannel(String discriminator, Collection<? extends RequestHandler<Channel>> handlers) {
-        super(discriminator, false, handlers);
-    }
+// TODO: investigate how to fix the forwarding channel failures when enabled
+//    @Override
+//    public ServerSession getSession() {
+//        return (ServerSession) super.getSession();
+//    }
 
     @Override
     public OpenFuture open(int recipient, long rwSize, long packetSize, Buffer buffer) {

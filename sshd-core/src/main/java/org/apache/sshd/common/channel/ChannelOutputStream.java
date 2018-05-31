@@ -45,7 +45,7 @@ public class ChannelOutputStream extends OutputStream {
     public static final String WAIT_FOR_SPACE_TIMEOUT = "channel-output-wait-for-space-timeout";
     public static final long DEFAULT_WAIT_FOR_SPACE_TIMEOUT = TimeUnit.SECONDS.toMillis(30L);
 
-    private final AbstractChannel<?> channelInstance;
+    private final AbstractChannel channelInstance;
     private final PacketWriter packetWriter;
     private final Window remoteWindow;
     private final long maxWaitTimeout;
@@ -59,11 +59,11 @@ public class ChannelOutputStream extends OutputStream {
     private int lastSize;
     private boolean noDelay;
 
-    public ChannelOutputStream(AbstractChannel<?> channel, Window remoteWindow, Logger log, byte cmd, boolean eofOnClose) {
+    public ChannelOutputStream(AbstractChannel channel, Window remoteWindow, Logger log, byte cmd, boolean eofOnClose) {
         this(channel, remoteWindow, channel.getLongProperty(WAIT_FOR_SPACE_TIMEOUT, DEFAULT_WAIT_FOR_SPACE_TIMEOUT), log, cmd, eofOnClose);
     }
 
-    public ChannelOutputStream(AbstractChannel<?> channel, Window remoteWindow, long maxWaitTimeout, Logger log, byte cmd, boolean eofOnClose) {
+    public ChannelOutputStream(AbstractChannel channel, Window remoteWindow, long maxWaitTimeout, Logger log, byte cmd, boolean eofOnClose) {
         this.channelInstance = Objects.requireNonNull(channel, "No channel");
         this.packetWriter = channelInstance.resolveChannelStreamPacketWriter(channel, cmd);
         this.remoteWindow = Objects.requireNonNull(remoteWindow, "No remote window");
@@ -75,7 +75,7 @@ public class ChannelOutputStream extends OutputStream {
         newBuffer(0);
     }
 
-    public AbstractChannel<?> getChannel() {
+    public AbstractChannel getChannel() {
         return channelInstance;
     }
 

@@ -27,7 +27,7 @@ import org.apache.sshd.common.session.helpers.AbstractConnectionService;
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
 public class ServerConnectionService
-        extends AbstractConnectionService<AbstractServerSession> {
+        extends AbstractConnectionService {
 
     protected ServerConnectionService(AbstractServerSession s) throws SshException {
         super(s);
@@ -37,4 +37,8 @@ public class ServerConnectionService
         }
     }
 
+    @Override
+    public AbstractServerSession getSession() {
+        return (AbstractServerSession) super.getSession();
+    }
 }

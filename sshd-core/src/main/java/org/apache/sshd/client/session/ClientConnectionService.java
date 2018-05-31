@@ -39,12 +39,17 @@ import org.apache.sshd.server.x11.X11ForwardSupport;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class ClientConnectionService extends AbstractConnectionService<AbstractClientSession> {
+public class ClientConnectionService extends AbstractConnectionService {
 
     private ScheduledFuture<?> heartBeat;
 
     public ClientConnectionService(AbstractClientSession s) throws SshException {
         super(s);
+    }
+
+    @Override
+    public AbstractClientSession getSession() {
+        return (AbstractClientSession) super.getSession();
     }
 
     @Override

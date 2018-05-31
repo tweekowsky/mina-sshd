@@ -37,18 +37,18 @@ import org.apache.sshd.common.util.closeable.AbstractCloseable;
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public class ChannelAsyncInputStream<S extends Session> extends AbstractCloseable implements IoInputStream {
-    private final Channel<S> channelInstance;
+public class ChannelAsyncInputStream extends AbstractCloseable implements IoInputStream {
+    private final Channel channelInstance;
     private final Buffer buffer = new ByteArrayBuffer();
     private final Object readFutureId;
     private IoReadFutureImpl pending;
 
-    public ChannelAsyncInputStream(Channel<S> channel) {
+    public ChannelAsyncInputStream(Channel channel) {
         this.channelInstance = Objects.requireNonNull(channel, "No channel");
         this.readFutureId = toString();
     }
 
-    public Channel<S> getChannel() {
+    public Channel getChannel() {
         return channelInstance;
     }
 

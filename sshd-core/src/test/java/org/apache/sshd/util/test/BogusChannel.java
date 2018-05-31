@@ -26,10 +26,9 @@ import org.apache.sshd.common.channel.AbstractChannel;
 import org.apache.sshd.common.channel.Channel;
 import org.apache.sshd.common.channel.throttle.ChannelStreamPacketWriterResolver;
 import org.apache.sshd.common.io.PacketWriter;
-import org.apache.sshd.common.session.Session;
 import org.apache.sshd.common.util.buffer.Buffer;
 
-public class BogusChannel extends AbstractChannel<Session> {
+public class BogusChannel extends AbstractChannel {
     public BogusChannel() {
         super(false);
     }

@@ -19,11 +19,9 @@
 
 package org.apache.sshd.git;
 
-import java.util.concurrent.ExecutorService;
-
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.ValidateUtils;
-import org.apache.sshd.common.util.threads.ExecutorServiceCarrier;
+import org.apache.sshd.common.util.threads.ExecutorService;
 import org.apache.sshd.server.command.AbstractDelegatingCommandFactory;
 import org.apache.sshd.server.command.Command;
 import org.apache.sshd.server.command.CommandFactory;
@@ -35,12 +33,10 @@ import org.apache.sshd.server.shell.UnknownCommand;
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
 public abstract class AbstractGitCommandFactory
-        extends AbstractDelegatingCommandFactory
-        implements ExecutorServiceCarrier, GitLocationResolverCarrier {
+        extends AbstractDelegatingCommandFactory {
     private final String cmdPrefix;
     private GitLocationResolver rootDirResolver;
     private ExecutorService executorService;
-    private boolean shutdownOnExit;
 
     /**
      * @param name Command factory logical name
@@ -57,14 +53,8 @@ public abstract class AbstractGitCommandFactory
         return cmdPrefix;
     }
 
-    @Override
     public ExecutorService getExecutorService() {
         return executorService;
-    }
-
-    @Override
-    public boolean isShutdownOnExit() {
-        return shutdownOnExit;
     }
 
     public AbstractGitCommandFactory withExecutorService(ExecutorService executorService) {
@@ -72,12 +62,6 @@ public abstract class AbstractGitCommandFactory
         return this;
     }
 
-    public AbstractGitCommandFactory withShutdownOnExit(boolean shutdownOnExit) {
-        this.shutdownOnExit = shutdownOnExit;
-        return this;
-    }
-
-    @Override
     public GitLocationResolver getGitLocationResolver() {
         return rootDirResolver;
     }

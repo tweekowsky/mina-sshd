@@ -19,49 +19,41 @@
 
 package org.apache.sshd.common.io;
 
-import java.util.concurrent.ExecutorService;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.sshd.common.FactoryManager;
 import org.apache.sshd.common.util.closeable.AbstractCloseable;
-import org.apache.sshd.common.util.threads.ExecutorServiceCarrier;
+import org.apache.sshd.common.util.threads.ExecutorService;
 
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
 public abstract class AbstractIoServiceFactory
                 extends AbstractCloseable
-                implements IoServiceFactory, ExecutorServiceCarrier {
+                implements IoServiceFactory {
 
     private final FactoryManager manager;
     private final ExecutorService executor;
-    private final boolean shutdownExecutor;
 
-    protected AbstractIoServiceFactory(FactoryManager factoryManager, ExecutorService executorService, boolean shutdownOnExit) {
-        manager = factoryManager;
-        executor = executorService;
-        shutdownExecutor = shutdownOnExit;
+    protected AbstractIoServiceFactory(FactoryManager factoryManager, ExecutorService executorService) {
+        manager = Objects.requireNonNull(factoryManager);
+        executor = Objects.requireNonNull(executorService);
     }
 
     public final FactoryManager getFactoryManager() {
         return manager;
     }
 
-    @Override
     public final ExecutorService getExecutorService() {
         return executor;
-    }
-
-    @Override
-    public final boolean isShutdownOnExit() {
-        return shutdownExecutor;
     }
 
     @Override
     protected void doCloseImmediately() {
         try {
             ExecutorService service = getExecutorService();
-            if ((service != null) && isShutdownOnExit() && (!service.isShutdown())) {
+            if ((service != null) && (!service.isShutdown())) {
                 log.debug("Shutdown executor");
                 service.shutdownNow();
                 if (service.awaitTermination(5, TimeUnit.SECONDS)) {

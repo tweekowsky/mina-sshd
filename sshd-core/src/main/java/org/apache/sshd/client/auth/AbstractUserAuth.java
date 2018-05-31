@@ -48,6 +48,7 @@ public abstract class AbstractUserAuth extends AbstractLoggingBean implements Us
         return name;
     }
 
+    @Override
     public String getService() {
         return service;
     }

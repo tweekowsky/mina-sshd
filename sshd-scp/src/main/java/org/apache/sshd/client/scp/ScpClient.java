@@ -29,6 +29,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.scp.ScpHelper;
 import org.apache.sshd.common.scp.ScpTimestamp;
 import org.apache.sshd.common.util.GenericUtils;
@@ -141,6 +142,8 @@ public interface ScpClient extends Closeable {
     void upload(InputStream local, String remote, long size, Collection<PosixFilePermission> perms, ScpTimestamp time) throws IOException;
 
     boolean isOpen();
+
+    ClientSession getSession();
 
     static String createSendCommand(String remote, Collection<Option> options) {
         StringBuilder sb = new StringBuilder(remote.length() + Long.SIZE).append(ScpHelper.SCP_COMMAND_PREFIX);

@@ -33,6 +33,7 @@ import org.apache.sshd.client.auth.password.PasswordIdentityProvider;
 import org.apache.sshd.client.keyverifier.ServerKeyVerifier;
 import org.apache.sshd.common.NamedFactory;
 import org.apache.sshd.common.NamedResource;
+import org.apache.sshd.common.keyprovider.KeyPairProvider;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.ValidateUtils;
 
@@ -61,6 +62,16 @@ public interface ClientAuthenticationManager {
      * Default value for {@link #PASSWORD_PROMPTS} if none configured
      */
     int DEFAULT_PASSWORD_PROMPTS = 3;
+
+    /**
+     * Retrieve the <code>KeyPairProvider</code> that will be used to find
+     * the host key to use on the server side or the user key on the client side.
+     *
+     * @return the <code>KeyPairProvider</code>, never {@code null}
+     */
+    KeyPairProvider getKeyPairProvider();
+
+    void setKeyPairProvider(KeyPairProvider keyPairProvider);
 
     /**
      * @return The {@link AuthenticationIdentitiesProvider} to be used for attempting

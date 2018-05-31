@@ -39,7 +39,7 @@ import org.apache.sshd.common.util.buffer.Buffer;
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public interface Channel<S extends Session>
+public interface Channel
         extends ChannelListenerManager,
                 PropertyResolver,
                 AttributeStore,
@@ -66,7 +66,7 @@ public interface Channel<S extends Session>
 
     Window getRemoteWindow();
 
-    S getSession();
+    Session getSession();
 
     List<RequestHandler<Channel>> getRequestHandlers();
 
@@ -154,7 +154,7 @@ public interface Channel<S extends Session>
      * @param id The locally assigned channel identifier
      * @throws IOException If failed to process the initialization
      */
-    void init(ConnectionService service, S session, int id) throws IOException;
+    void init(ConnectionService service, Session session, int id) throws IOException;
 
     /**
      * @return {@code true} if call to {@link #init(ConnectionService, Session, int)} was

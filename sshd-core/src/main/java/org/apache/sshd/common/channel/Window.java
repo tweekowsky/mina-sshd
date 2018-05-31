@@ -53,7 +53,7 @@ public class Window extends AbstractLoggingBean implements Closeable {
 
     private final AtomicBoolean closed = new AtomicBoolean(false);
     private final AtomicBoolean initialized = new AtomicBoolean(false);
-    private final AbstractChannel<?> channelInstance;
+    private final AbstractChannel channelInstance;
     private final Object lock;
     private final String suffix;
 
@@ -61,13 +61,13 @@ public class Window extends AbstractLoggingBean implements Closeable {
     private long maxSize;   // actually uint32
     private long packetSize;   // actually uint32
 
-    public Window(AbstractChannel<?> channel, Object lock, boolean client, boolean local) {
+    public Window(AbstractChannel channel, Object lock, boolean client, boolean local) {
         this.channelInstance = Objects.requireNonNull(channel, "No channel provided");
         this.lock = (lock != null) ? lock : this;
         this.suffix = (client ? "client" : "server") + "/" + (local ? "local" : "remote");
     }
 
-    public AbstractChannel<?> getChannel() {
+    public AbstractChannel getChannel() {
         return channelInstance;
     }
 
@@ -186,7 +186,7 @@ public class Window extends AbstractLoggingBean implements Closeable {
         checkInitialized("check");
 
         long adjustSize = -1L;
-        AbstractChannel<?> channel = getChannel();
+        AbstractChannel channel = getChannel();
         synchronized (lock) {
             // TODO make the adjust factor configurable via FactoryManager property
             long size = this.size;
@@ -321,6 +321,7 @@ public class Window extends AbstractLoggingBean implements Closeable {
         return !closed.get();
     }
 
+    @Override
     public void close() throws IOException {
         if (!closed.getAndSet(true)) {
             if (log.isDebugEnabled()) {

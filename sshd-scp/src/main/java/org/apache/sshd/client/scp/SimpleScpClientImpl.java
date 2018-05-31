@@ -20,7 +20,6 @@
 package org.apache.sshd.client.scp;
 
 import java.io.IOException;
-import java.lang.reflect.Proxy;
 import java.net.SocketAddress;
 import java.security.KeyPair;
 import java.util.Objects;
@@ -111,25 +110,26 @@ public class SimpleScpClientImpl extends AbstractLoggingBean implements SimpleSc
     }
 
     protected ScpClient createScpClient(ClientSession session, ScpClient client) throws IOException {
-        ClassLoader loader = getClass().getClassLoader();
-        Class<?>[] interfaces = {ScpClient.class};
-        return (ScpClient) Proxy.newProxyInstance(loader, interfaces, (proxy, method, args) -> {
-            String name = method.getName();
-            try {
-                // The Channel implementation is provided by the session
-                if (("close".equals(name) || "isOpen".equals(name)) && GenericUtils.isEmpty(args)) {
-                    return method.invoke(session, args);
-                } else {
-                    return method.invoke(client, args);
-                }
-            } catch (Throwable t) {
-                if (log.isTraceEnabled()) {
-                    log.trace("invoke(ScpClient#{}) failed ({}) to execute: {}",
-                              name, t.getClass().getSimpleName(), t.getMessage());
-                }
-                throw t;
-            }
-        });
+        return client;
+//        ClassLoader loader = getClass().getClassLoader();
+//        Class<?>[] interfaces = {ScpClient.class};
+//        return (ScpClient) Proxy.newProxyInstance(loader, interfaces, (proxy, method, args) -> {
+//            String name = method.getName();
+//            try {
+//                // The Channel implementation is provided by the session
+//                if (("close".equals(name) || "isOpen".equals(name)) && GenericUtils.isEmpty(args)) {
+//                    return method.invoke(session, args);
+//                } else {
+//                    return method.invoke(client, args);
+//                }
+//            } catch (Throwable t) {
+//                if (log.isTraceEnabled()) {
+//                    log.trace("invoke(ScpClient#{}) failed ({}) to execute: {}",
+//                              name, t.getClass().getSimpleName(), t.getMessage());
+//                }
+//                throw t;
+//            }
+//        });
     }
 
     public boolean isOpen() {

@@ -17,13 +17,10 @@
  * under the License.
  */
 
-package org.apache.sshd.git;
+package org.apache.sshd.common.util.threads;
 
-/**
- * TODO Add javadoc
- *
- * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
- */
-public interface GitLocationResolverCarrier {
-    GitLocationResolver getGitLocationResolver();
+import org.apache.sshd.common.Closeable;
+
+public interface ExecutorService extends java.util.concurrent.ExecutorService, Closeable {
+
 }

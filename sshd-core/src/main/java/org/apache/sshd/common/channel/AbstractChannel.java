@@ -29,7 +29,6 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -59,16 +58,16 @@ import org.apache.sshd.common.util.buffer.BufferUtils;
 import org.apache.sshd.common.util.closeable.AbstractInnerCloseable;
 import org.apache.sshd.common.util.closeable.IoBaseCloseable;
 import org.apache.sshd.common.util.io.IoUtils;
-import org.apache.sshd.common.util.threads.ExecutorServiceConfigurer;
+import org.apache.sshd.common.util.threads.ExecutorService;
 
 /**
  * Provides common client/server channel functionality
  *
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>
  */
-public abstract class AbstractChannel<S extends Session>
+public abstract class AbstractChannel
         extends AbstractInnerCloseable
-        implements Channel<S>, ExecutorServiceConfigurer {
+        implements Channel {
 
     /**
      * Default growth factor function used to resize response buffers
@@ -93,9 +92,8 @@ public abstract class AbstractChannel<S extends Session>
 
     private int id = -1;
     private int recipient = -1;
-    private S sessionInstance;
+    private Session sessionInstance;
     private ExecutorService executor;
-    private boolean shutdownExecutor;
     private final List<RequestHandler<Channel>> requestHandlers = new CopyOnWriteArrayList<>();
 
     private final Window localWindow;
@@ -115,19 +113,20 @@ public abstract class AbstractChannel<S extends Session>
     }
 
     protected AbstractChannel(boolean client, Collection<? extends RequestHandler<Channel>> handlers) {
-        this("", client, handlers);
+        this("", client, handlers, null);
     }
 
     protected AbstractChannel(String discriminator, boolean client) {
-        this(discriminator, client, Collections.emptyList());
+        this(discriminator, client, Collections.emptyList(), null);
     }
 
-    protected AbstractChannel(String discriminator, boolean client, Collection<? extends RequestHandler<Channel>> handlers) {
+    protected AbstractChannel(String discriminator, boolean client, Collection<? extends RequestHandler<Channel>> handlers, ExecutorService executorService) {
         super(discriminator);
         gracefulFuture = new DefaultCloseFuture(discriminator, lock);
         localWindow = new Window(this, null, client, true);
         remoteWindow = new Window(this, null, client, false);
         channelListenerProxy = EventListenerUtils.proxyWrapper(ChannelListener.class, getClass().getClassLoader(), channelListeners);
+        executor = executorService;
         addRequestHandlers(handlers);
     }
 
@@ -174,7 +173,7 @@ public abstract class AbstractChannel<S extends Session>
     }
 
     @Override
-    public S getSession() {
+    public Session getSession() {
         return sessionInstance;
     }
 
@@ -183,24 +182,8 @@ public abstract class AbstractChannel<S extends Session>
         return getSession();
     }
 
-    @Override
     public ExecutorService getExecutorService() {
         return executor;
-    }
-
-    @Override
-    public void setExecutorService(ExecutorService service) {
-        executor = service;
-    }
-
-    @Override
-    public boolean isShutdownOnExit() {
-        return shutdownExecutor;
-    }
-
-    @Override
-    public void setShutdownOnExit(boolean shutdown) {
-        shutdownExecutor = shutdown;
     }
 
     @Override
@@ -372,7 +355,7 @@ public abstract class AbstractChannel<S extends Session>
     }
 
     @Override
-    public void init(ConnectionService service, S session, int id) throws IOException {
+    public void init(ConnectionService service, Session session, int id) throws IOException {
         if (log.isDebugEnabled()) {
             log.debug("init() service={} session={} id={}", service, session, id);
         }
@@ -655,7 +638,7 @@ public abstract class AbstractChannel<S extends Session>
             }
 
             ExecutorService service = getExecutorService();
-            if ((service != null) && isShutdownOnExit() && (!service.isShutdown())) {
+            if ((service != null) && (!service.isShutdown())) {
                 Collection<?> running = service.shutdownNow();
                 if (debugEnabled) {
                     log.debug("close({})[immediately={}] shutdown executor service on close - running count={}",

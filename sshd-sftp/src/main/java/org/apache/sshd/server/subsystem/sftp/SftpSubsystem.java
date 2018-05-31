@@ -40,7 +40,6 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -66,7 +65,7 @@ import org.apache.sshd.common.util.buffer.Buffer;
 import org.apache.sshd.common.util.buffer.BufferUtils;
 import org.apache.sshd.common.util.buffer.ByteArrayBuffer;
 import org.apache.sshd.common.util.io.IoUtils;
-import org.apache.sshd.common.util.threads.ExecutorServiceCarrier;
+import org.apache.sshd.common.util.threads.ExecutorService;
 import org.apache.sshd.common.util.threads.ThreadUtils;
 import org.apache.sshd.server.ChannelSessionAware;
 import org.apache.sshd.server.Environment;
@@ -85,7 +84,7 @@ import org.apache.sshd.server.session.ServerSession;
  */
 public class SftpSubsystem
         extends AbstractSftpSubsystemHelper
-        implements Command, Runnable, SessionAware, FileSystemAware, ExecutorServiceCarrier,
+        implements Command, Runnable, SessionAware, FileSystemAware,
                     AsyncCommand, ChannelSessionAware, ChannelDataReceiver {
 
     /**
@@ -150,15 +149,11 @@ public class SftpSubsystem
     protected ServerSession serverSession;
     protected ChannelSession channelSession;
     protected ExecutorService executorService;
-    protected boolean shutdownOnExit;
 
     /**
      * @param executorService The {@link ExecutorService} to be used by
      *                        the {@link SftpSubsystem} command when starting execution. If
      *                        {@code null} then a single-threaded ad-hoc service is used.
-     * @param shutdownOnExit  If {@code true} the {@link ExecutorService#shutdownNow()}
-     *                        will be called when subsystem terminates - unless it is the ad-hoc
-     *                        service, which will be shutdown regardless
      * @param policy          The {@link UnsupportedAttributePolicy} to use if failed to access
      *                        some local file attributes
      * @param accessor        The {@link SftpFileSystemAccessor} to use for opening files and directories
@@ -166,16 +161,14 @@ public class SftpSubsystem
      * use when generating failed commands error messages
      * @see ThreadUtils#newSingleThreadExecutor(String)
      */
-    public SftpSubsystem(ExecutorService executorService, boolean shutdownOnExit, UnsupportedAttributePolicy policy,
+    public SftpSubsystem(ExecutorService executorService, UnsupportedAttributePolicy policy,
             SftpFileSystemAccessor accessor, SftpErrorStatusDataHandler errorStatusDataHandler) {
         super(policy, accessor, errorStatusDataHandler);
 
         if (executorService == null) {
             this.executorService = ThreadUtils.newSingleThreadExecutor(getClass().getSimpleName());
-            this.shutdownOnExit = true;    // we always close the ad-hoc executor service
         } else {
             this.executorService = executorService;
-            this.shutdownOnExit = shutdownOnExit;
         }
     }
 
@@ -189,14 +182,8 @@ public class SftpSubsystem
         return defaultDir;
     }
 
-    @Override
     public ExecutorService getExecutorService() {
         return executorService;
-    }
-
-    @Override
-    public boolean isShutdownOnExit() {
-        return shutdownOnExit;
     }
 
     @Override
@@ -1003,7 +990,7 @@ public class SftpSubsystem
         pendingFuture = null;
 
         ExecutorService executors = getExecutorService();
-        if ((executors != null) && (!executors.isShutdown()) && isShutdownOnExit()) {
+        if ((executors != null) && (!executors.isShutdown())) {
             Collection<Runnable> runners = executors.shutdownNow();
             if (debugEnabled) {
                 log.debug("destroy(" + session + ") - shutdown executor service - runners count=" + runners.size());
