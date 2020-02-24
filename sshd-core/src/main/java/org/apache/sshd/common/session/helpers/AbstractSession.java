@@ -175,6 +175,7 @@ public abstract class AbstractSession extends SessionHelper {
     protected final Object encodeLock = new Object();
     protected final Object decodeLock = new Object();
     protected final Object requestLock = new Object();
+    protected long requestSeq = -1;
 
     /*
      * Rekeying
@@ -959,7 +960,10 @@ public abstract class AbstractSession extends SessionHelper {
         boolean traceEnabled = log.isTraceEnabled();
         synchronized (requestLock) {
             try {
-                writePacket(buffer);
+                synchronized (encodeLock) {
+                    requestSeq = seqo;
+                    writePacket(buffer);
+                }
 
                 synchronized (requestResult) {
                     while (isOpen() && (maxWaitMillis > 0L) && (requestResult.get() == null)) {
@@ -980,6 +984,7 @@ public abstract class AbstractSession extends SessionHelper {
                     }
 
                     result = requestResult.getAndSet(null);
+                    requestSeq = -1;
                 }
             } catch (InterruptedException e) {
                 throw (InterruptedIOException) new InterruptedIOException(
@@ -1797,6 +1802,26 @@ public abstract class AbstractSession extends SessionHelper {
             resetIdleTimeout();
             requestResult.notifyAll();
         }
+    }
+
+    @Override
+    protected void doHandleUnimplemented(Buffer buffer) throws Exception {
+        // Some servers do respond to requests with the SSH_MSG_UNIMPLEMENTED
+        // message instead of SSH_MSG_REQUEST_FAILURE, so deal with it
+        synchronized (requestResult) {
+            if (requestSeq >= 0) {
+                int rpos = buffer.rpos();
+                int seq = buffer.getInt();
+                if (requestSeq == seq) {
+                    requestResult.set(GenericUtils.NULL);
+                    resetIdleTimeout();
+                    requestResult.notifyAll();
+                    return;
+                }
+                buffer.rpos(rpos);
+            }
+        }
+        super.doHandleUnimplemented(buffer);
     }
 
     @Override
